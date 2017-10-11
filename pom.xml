@@ -36,8 +36,8 @@
     </build>
 
     <parent>
-        <groupId>com.jdd.lkcz</groupId>
-        <artifactId>parent</artifactId>
+        <groupId>com.wf</groupId>
+        <artifactId>wf_parent</artifactId>
         <version>1.0.0</version>
     </parent>
 
