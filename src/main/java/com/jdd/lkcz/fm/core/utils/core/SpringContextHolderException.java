@@ -1,4 +1,4 @@
-package com.jdd.lkcz.fm.core.utils.core.exception;
+package com.jdd.lkcz.fm.core.utils.core;
 
 public class SpringContextHolderException extends RuntimeException {
 
