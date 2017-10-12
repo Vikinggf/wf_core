@@ -77,7 +77,7 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
             logger.warn("SpringContextHolder.applicationContext被覆盖");
         }
 
-        applicationContext = applicationContext;
+        SpringContextHolder.applicationContext = applicationContext;
         propertyResolver = (PropertyResolver)getBean(PropertyResolver.class);
     }
 
