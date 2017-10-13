@@ -6,6 +6,14 @@
     <groupId>com.wf</groupId>
     <artifactId>wf_core</artifactId>
     <version>1.0.0</version>
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/javax.persistence/persistence-api -->
+        <dependency>
+            <groupId>javax.persistence</groupId>
+            <artifactId>persistence-api</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
     <properties>
         <distribution.repository.url>http://192.168.101.241:4000/content/repositories</distribution.repository.url>
     </properties>
