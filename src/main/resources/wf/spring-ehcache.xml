@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	 xmlns:p="http://www.springframework.org/schema/p"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+          "
+	default-autowire="byName" default-lazy-init="false">
+	<!-- 引用ehCache的配置 -->
+	<bean id="defaultCacheManager"
+		class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
+		p:shared="true">
+		<property name="configLocation">
+			<value>classpath:wf/ehcache.xml</value>
+		</property>
+	</bean>
+	<bean id="ehcacheManager" class="com.wf.core.cache.ehcache.EhcacheManager">
+		<property name="ehCache" ref="ehCache" />
+	</bean>
+	<!-- 定义ehCache的工厂，并设置所使用的Cache name -->
+	<bean id="ehCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+		<property name="cacheManager">
+			<ref bean="defaultCacheManager" />
+		</property>
+		<property name="cacheName">
+			<value>DEFAULT_CACHE</value>
+		</property>
+	</bean>
+</beans>  
