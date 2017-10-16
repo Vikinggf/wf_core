@@ -5,12 +5,16 @@ import com.wf.core.idg.IDGeneratorException;
 import com.wf.core.idg.api.IdGeneratorApi;
 import com.wf.core.idg.util.IdgParam;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Table;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RedisIdGenerator implements IdGeneratorApi<Number> {
+
+    private static Logger logger = LoggerFactory.getLogger(RedisIdGenerator.class);
 
     private CacheHander cacheHander;
 
@@ -62,7 +66,9 @@ public class RedisIdGenerator implements IdGeneratorApi<Number> {
     }
 
     private Number generateId(IdgParam param) {
-        return cacheHander.incrBy(param.getName(), 1, null);
+        Number number = cacheHander.incrBy(param.getName(), 1, null);
+        logger.info("[{}][{}]-[{}]","redis_generate_id",param.getName(),number);
+        return number;
     }
 
     @Override
