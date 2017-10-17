@@ -10,11 +10,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.web.subject.WebSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * 控制器支持类
@@ -65,13 +63,15 @@ public abstract class BaseController extends MVCExceptionHandle {
     protected String getToken() {
         return getToken(((WebSubject) SecurityUtils.getSubject()).getServletRequest());
     }
+
     /**
      * 获得Ip地址
+     *
      * @return
      */
-    protected String getIp(){
-    	ServletRequest request = ((WebSubject) SecurityUtils.getSubject()).getServletRequest();
-    	return request.getLocalAddr();
+    protected String getIp() {
+        ServletRequest request = ((WebSubject) SecurityUtils.getSubject()).getServletRequest();
+        return request.getLocalAddr();
     }
 
     /**
