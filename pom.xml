@@ -13,7 +13,13 @@
             <artifactId>persistence-api</artifactId>
             <version>1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>4.1.12.Final</version>
+        </dependency>
     </dependencies>
+
     <properties>
         <distribution.repository.url>http://192.168.101.241:4000/content/repositories</distribution.repository.url>
     </properties>
@@ -42,12 +48,18 @@
             </plugin>
         </plugins>
     </build>
-
     <parent>
         <groupId>com.wf</groupId>
         <artifactId>wf_parent</artifactId>
         <version>1.0.0</version>
     </parent>
+
+    <repositories>
+        <repository>
+            <id>snapshots</id>
+            <url>${distribution.repository.url}/snapshots</url>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <snapshotRepository>

@@ -28,7 +28,7 @@ public class ClassUtil {
 	 * @return 一个InputStream流
 	 */
 	public static InputStream getResourceAsStreamUseRelativeClassPath(
-			Class<?> classLoaderClass, String path) {
+            Class<?> classLoaderClass, String path) {
 		String path0 = addRelativeClassPath(classLoaderClass, path);
 		return getResourceAsStream(classLoaderClass, path0);
 	}

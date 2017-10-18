@@ -123,8 +123,8 @@ public class ByteArray {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ByteArray)
-			return Arrays.equals(data, ((ByteArray) obj).data);
+		if (obj instanceof com.wf.core.idg.util.ByteArray)
+			return Arrays.equals(data, ((com.wf.core.idg.util.ByteArray) obj).data);
 		return false;
 	}
 }

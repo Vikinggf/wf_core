@@ -14,7 +14,7 @@ public interface IDGeneratorHander {
 	 * @throws IDGeneratorException
 	 */
 	public long nextId(Object entity) throws IDGeneratorException;
-	
+
 	/**
 	 * 获取下一个 int类型的ID
 	 * @param entity
@@ -22,4 +22,12 @@ public interface IDGeneratorHander {
 	 * @throws IDGeneratorException
 	 */
 	public int nextIntId(Object entity) throws IDGeneratorException;
+
+	/**
+	 * 新增时异常，修正id
+	 * @param entity
+	 * @param e
+	 * @return
+	 */
+	public Number entityCorrectId(Object entity, Exception e);
 }

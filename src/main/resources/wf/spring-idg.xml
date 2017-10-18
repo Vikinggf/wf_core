@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<bean id="redisIdGenerator" class="com.wf.core.idg.redis.RedisIdGenerator">
+		<property name="cacheHander" ref="redisCacheHander" />
+	</bean>
+
+	<bean id="idGeneratorHander" class="com.wf.core.idg.IDGeneratorHanderImpl">
+		<property name="idGenerator" ref="redisIdGenerator" />
+	</bean>
+</beans>
