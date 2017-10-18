@@ -20,7 +20,7 @@ public interface CrudDao<T> extends BaseDao {
      * @param id
      * @return
      */
-    public T get(Long id);
+    T get(Long id);
 
     /**
      * 查询数据列表
@@ -28,7 +28,7 @@ public interface CrudDao<T> extends BaseDao {
      * @param page
      * @return
      */
-    public List<T> findList(Page<T> page);
+    List<T> findList(Page<T> page);
 
     /**
      * 查询数据条数
@@ -36,7 +36,7 @@ public interface CrudDao<T> extends BaseDao {
      * @param entity
      * @return
      */
-    public long count(Page<T> page);
+    long count(Page<T> page);
 
     /**
      * 插入数据
@@ -44,7 +44,7 @@ public interface CrudDao<T> extends BaseDao {
      * @param entity
      * @return
      */
-    public int insert(T entity);
+    int insert(T entity);
 
     /**
      * 更新数据
@@ -52,7 +52,7 @@ public interface CrudDao<T> extends BaseDao {
      * @param entity
      * @return
      */
-    public int update(T entity);
+    int update(T entity);
 
     /**
      * 删除数据（一般为逻辑删除，更新del_flag字段为1）
@@ -61,5 +61,5 @@ public interface CrudDao<T> extends BaseDao {
      * @return
      * @see public int delete(T entity)
      */
-    public int delete(Long id);
+    int delete(Long id);
 }
