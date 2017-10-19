@@ -102,7 +102,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      *
      * @return
      */
-    private String getTokenNoError() {
+    protected String getTokenNoError() {
         return getRequest().getHeader(OAuth.HeaderType.AUTHORIZATION);
     }
 

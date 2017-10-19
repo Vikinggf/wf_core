@@ -7,6 +7,9 @@ package com.wf.core.cache;
 public interface CacheKey {
     long MINUTE_1 = 60L * 1;
     long MINUTE_5 = MINUTE_1 * 5;
+    long MINUTE_10 = MINUTE_1 * 10;
+    long MINUTE_15 = MINUTE_1 * 15;
+    long MINUTE_30 = MINUTE_1 * 30;
     long HOUR_1 = MINUTE_1 * 60;
     long HOUR_2 = HOUR_1 * 2;
     long HOUR_3 = HOUR_1 * 3;
