@@ -6,10 +6,10 @@ import com.wf.core.web.response.ErrorRspBean;
 import com.wf.core.web.response.SuccessRspBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.common.OAuth;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.web.subject.WebSubject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -61,7 +61,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getToken() {
-        return getToken(((WebSubject) SecurityUtils.getSubject()).getServletRequest());
+        return getToken(getRequest());
     }
 
     /**
@@ -70,8 +70,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getIp() {
-        ServletRequest request = ((WebSubject) SecurityUtils.getSubject()).getServletRequest();
-        return request.getLocalAddr();
+        return getRequest().getLocalAddr();
     }
 
     /**
@@ -81,11 +80,12 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getToken(ServletRequest request) {
-        String token = ((HttpServletRequest) request).getHeader(OAuth.HeaderType.AUTHORIZATION);
-        if (StringUtils.isBlank(token))
+        String token = getRequest().getHeader(OAuth.HeaderType.AUTHORIZATION);
+        if (StringUtils.isBlank(token)) {
             throw new LbmOAuthException();
-        else
+        } else {
             return token;
+        }
     }
 
 
@@ -103,8 +103,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     private String getTokenNoError() {
-        HttpServletRequest request = (HttpServletRequest) ((WebSubject) SecurityUtils.getSubject()).getServletRequest();
-        return request.getHeader(OAuth.HeaderType.AUTHORIZATION);
+        return getRequest().getHeader(OAuth.HeaderType.AUTHORIZATION);
     }
 
     /**
@@ -123,7 +122,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getAppVersion() {
-        return getAppVersion(((WebSubject) SecurityUtils.getSubject()).getServletRequest());
+        return getAppVersion(getRequest());
     }
 
 
@@ -148,6 +147,14 @@ public abstract class BaseController extends MVCExceptionHandle {
         return value;
     }
 
+    /**
+     * 获取request
+     *
+     * @return
+     */
+    public HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
 
     /**
      * 获取渠道
@@ -156,7 +163,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getAppChannel(ServletRequest request) {
-        return ((HttpServletRequest) request).getHeader("App-Channel");
+        return getRequest().getHeader("App-Channel");
     }
 
     /**
@@ -165,7 +172,7 @@ public abstract class BaseController extends MVCExceptionHandle {
      * @return
      */
     protected String getAppChannel() {
-        return getAppChannel(((WebSubject) SecurityUtils.getSubject()).getServletRequest());
+        return getAppChannel(getRequest());
     }
 
     public static class LbmOAuthException extends RuntimeException {
