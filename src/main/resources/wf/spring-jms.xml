@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+	<bean id="messageConverter" class="org.springframework.amqp.support.converter.JsonMessageConverter">
+		<property name="defaultCharset" value="UTF-8" />
+	</bean>
+	<bean id="connectionFactory" class="org.springframework.amqp.rabbit.connection.CachingConnectionFactory">
+		<constructor-arg name="hostname" value="${rabbit.server}" />
+		<constructor-arg name="port" value="${rabbit.port}" />
+		<property name="username" value="${rabbit.user}" />
+		<property name="password" value="${rabbit.password}" />
+		<property name="channelCacheSize" value="25" />
+	</bean>
+	<rabbit:admin connection-factory="connectionFactory" />
+	<rabbit:queue name="game_default_v_0_1" />
+	<bean id="rabbitTemplate" name="rabbitTemplate" class="org.springframework.amqp.rabbit.core.RabbitTemplate">
+		<constructor-arg ref="connectionFactory" />
+		<property name="queue" value="game_default_v_0_1" />
+		<property name="messageConverter" ref="messageConverter" />
+	</bean>
+	
+</beans>
