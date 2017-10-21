@@ -24,7 +24,6 @@ public abstract class BaseController extends MVCExceptionHandle {
     public static final BaseRspBean SUCCESS = new SuccessRspBean<>(), ERROR = new ErrorRspBean();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-    private static final Long DEFAULT_CHANNEL = 100000L;
 
     /**
      * data
