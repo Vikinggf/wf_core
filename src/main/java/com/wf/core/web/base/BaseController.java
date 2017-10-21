@@ -176,20 +176,6 @@ public abstract class BaseController extends MVCExceptionHandle {
         return getAppChannel(getRequest());
     }
 
-    /**
-     * 获取当前渠道信息
-     * @return
-     */
-    protected Long getChannel() {
-        String channel = getAppChannel();
-        if (StringUtils.isBlank(channel)) {
-            //默认多多互娱
-            return DEFAULT_CHANNEL;
-        } else {
-            channel = channel.split("#")[0];
-        }
-        return Long.parseLong(channel);
-    }
 
     public static class LbmOAuthException extends RuntimeException {
         private static final long serialVersionUID = 5067141585734438228L;
