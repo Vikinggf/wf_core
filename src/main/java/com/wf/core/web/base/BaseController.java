@@ -180,6 +180,10 @@ public abstract class BaseController extends MVCExceptionHandle {
         private static final long serialVersionUID = 5067141585734438228L;
     }
 
+    public static class ChannelErrorException extends RuntimeException {
+        private static final long serialVersionUID = 7308727782750338596L;
+    }
+
     protected String appendUrlParam(String url, String param) {
         return url + (url.contains("?") ? "&" : "?") + param;
     }
