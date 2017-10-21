@@ -1,6 +1,5 @@
 package com.wf.core.web.base;
 
-import com.rabbitmq.http.client.domain.ChannelInfo;
 import com.wf.core.utils.MVCExceptionHandle;
 import com.wf.core.web.response.BaseRspBean;
 import com.wf.core.web.response.ErrorRspBean;
