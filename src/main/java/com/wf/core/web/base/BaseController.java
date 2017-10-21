@@ -1,5 +1,6 @@
 package com.wf.core.web.base;
 
+import com.rabbitmq.http.client.domain.ChannelInfo;
 import com.wf.core.utils.MVCExceptionHandle;
 import com.wf.core.web.response.BaseRspBean;
 import com.wf.core.web.response.ErrorRspBean;
@@ -24,6 +25,7 @@ public abstract class BaseController extends MVCExceptionHandle {
     public static final BaseRspBean SUCCESS = new SuccessRspBean<>(), ERROR = new ErrorRspBean();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private static final Long DEFAULT_CHANNEL = 100000L;
 
     /**
      * data
@@ -175,12 +177,23 @@ public abstract class BaseController extends MVCExceptionHandle {
         return getAppChannel(getRequest());
     }
 
-    public static class LbmOAuthException extends RuntimeException {
-        private static final long serialVersionUID = 5067141585734438228L;
+    /**
+     * 获取当前渠道信息
+     * @return
+     */
+    protected Long getChannel() {
+        String channel = getAppChannel();
+        if (StringUtils.isBlank(channel)) {
+            //默认多多互娱
+            return DEFAULT_CHANNEL;
+        } else {
+            channel = channel.split("#")[0];
+        }
+        return Long.parseLong(channel);
     }
 
-    public static class ChannelErrorException extends RuntimeException {
-        private static final long serialVersionUID = 7308727782750338596L;
+    public static class LbmOAuthException extends RuntimeException {
+        private static final long serialVersionUID = 5067141585734438228L;
     }
 
     protected String appendUrlParam(String url, String param) {
