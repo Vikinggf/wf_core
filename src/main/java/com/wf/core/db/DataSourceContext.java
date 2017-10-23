@@ -5,8 +5,9 @@ package com.wf.core.db;
  */
 public class DataSourceContext {
 	public final static String DATA_SOURCE_READ = "dataSourceRead";
-
 	public final static String DATA_SOURCE_WRITE = "dataSourceWrite";
+	public final static String DATA_SOURCE_READ_MYCAT = "dataSourceReadMycat";
+	public final static String DATA_SOURCE_WRITE_MYCAT = "dataSourceWriteMycat";
 
 	private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
 
