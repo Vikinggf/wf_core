@@ -1,12 +1,10 @@
-/**
- * http://www.lbanma.com
- */
 package com.wf.core.persistence;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.web.subject.WebSubject;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -37,10 +35,15 @@ public class Page<T> {
         if (entity == null)
             throw new NullPointerException();
         try {
-            ServletRequest request = ((WebSubject) SecurityUtils.getSubject()).getServletRequest();
+            RequestAttributes ra = RequestContextHolder.getRequestAttributes();
+            if (ra == null) {
+                throw new RuntimeException("RequestContextHolder未在Spring中配置");
+            }
+            HttpServletRequest request = ((ServletRequestAttributes)ra).getRequest();
             String sStart = request.getParameter("start");
             String sLength = request.getParameter("length");
             this.draw = request.getParameter("draw");
+
             if (sStart != null)
                 start = Integer.parseInt(sStart);
             if (sLength != null)
@@ -49,7 +52,7 @@ public class Page<T> {
                 length = MAX_RESULT_COUNT;
             this.p = entity;
         } catch (Exception e) {
-            throw new RuntimeException("无法获取到request");
+            throw new RuntimeException(e);
         }
     }
 
