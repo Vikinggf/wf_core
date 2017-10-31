@@ -17,7 +17,7 @@ import java.util.List;
  * @version 2013-7-2
  */
 public class Page<T> {
-    public static final String dbName = "mysql";
+    public static final String DB_NAME = "mysql";
     public static final String DEL_FLAG_NORMAL = "0";
     public static final String DEL_FLAG_DELETE = "1";
     public static final long MAX_RESULT_COUNT = 100;

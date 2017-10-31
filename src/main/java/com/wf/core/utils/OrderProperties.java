@@ -21,14 +21,14 @@ public class OrderProperties extends Properties {
      * 序列化ID
      */
     private static final long serialVersionUID = -762117852594617585L;
-    private static final String keyValueSeparators = "=: \t\r\n\f";
-    private static final String strictKeyValueSeparators = "=:";
-    private static final String specialSaveChars = "=: \t\r\n\f#!";
-    private static final String whiteSpaceChars = " \t\r\n\f";
+    private static final String KEY_VALUE_SEPARATORS = "=: \t\r\n\f";
+    private static final String STRICT_KEY_VALUE_SEPARATORS = "=:";
+    private static final String SPECIAL_SAVE_CHARS = "=: \t\r\n\f#!";
+    private static final String WHITE_SPACE_CHARS = " \t\r\n\f";
     /**
      * A table of hex digits
      */
-    private static final char[] hexDigit = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] HEX_DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     private PropertiesContext context = new PropertiesContext();
 
     private static void writeln(BufferedWriter bw, String s) throws IOException {
@@ -42,7 +42,7 @@ public class OrderProperties extends Properties {
      * @param nibble the nibble to convert.
      */
     private static char toHex(int nibble) {
-        return hexDigit[(nibble & 0xF)];
+        return HEX_DIGIT[(nibble & 0xF)];
     }
 
     public PropertiesContext getContext() {
@@ -59,8 +59,9 @@ public class OrderProperties extends Properties {
             String line = in.readLine();
             // intract property/comment string
             String intactLine = line;
-            if (line == null)
+            if (line == null) {
                 return;
+            }
 
             if (line.length() > 0) {
 
@@ -68,7 +69,7 @@ public class OrderProperties extends Properties {
                 int len = line.length();
                 int keyStart;
                 for (keyStart = 0; keyStart < len; keyStart++)
-                    if (whiteSpaceChars.indexOf(line.charAt(keyStart)) == -1)
+                    if (WHITE_SPACE_CHARS.indexOf(line.charAt(keyStart)) == -1)
                         break;
 
                 // Blank lines are ignored
@@ -88,7 +89,7 @@ public class OrderProperties extends Properties {
                         // Advance beyond whitespace on new line
                         int startIndex;
                         for (startIndex = 0; startIndex < nextLine.length(); startIndex++)
-                            if (whiteSpaceChars.indexOf(nextLine.charAt(startIndex)) == -1)
+                            if (WHITE_SPACE_CHARS.indexOf(nextLine.charAt(startIndex)) == -1)
                                 break;
                         nextLine = nextLine.substring(startIndex, nextLine.length());
                         line = loppedLine + nextLine;
@@ -99,26 +100,27 @@ public class OrderProperties extends Properties {
                     int separatorIndex;
                     for (separatorIndex = keyStart; separatorIndex < len; separatorIndex++) {
                         char currentChar = line.charAt(separatorIndex);
-                        if (currentChar == '\\')
+                        if (currentChar == '\\') {
                             separatorIndex++;
-                        else if (keyValueSeparators.indexOf(currentChar) != -1)
+                        } else if (KEY_VALUE_SEPARATORS.indexOf(currentChar) != -1) {
                             break;
+                        }
                     }
 
                     // Skip over whitespace after key if any
                     int valueIndex;
                     for (valueIndex = separatorIndex; valueIndex < len; valueIndex++)
-                        if (whiteSpaceChars.indexOf(line.charAt(valueIndex)) == -1)
+                        if (WHITE_SPACE_CHARS.indexOf(line.charAt(valueIndex)) == -1)
                             break;
 
                     // Skip over one non whitespace key value separators if any
                     if (valueIndex < len)
-                        if (strictKeyValueSeparators.indexOf(line.charAt(valueIndex)) != -1)
+                        if (STRICT_KEY_VALUE_SEPARATORS.indexOf(line.charAt(valueIndex)) != -1)
                             valueIndex++;
 
                     // Skip over white space after other separators if any
                     while (valueIndex < len) {
-                        if (whiteSpaceChars.indexOf(line.charAt(valueIndex)) == -1)
+                        if (WHITE_SPACE_CHARS.indexOf(line.charAt(valueIndex)) == -1)
                             break;
                         valueIndex++;
                     }
@@ -247,7 +249,7 @@ public class OrderProperties extends Properties {
 
     /*
      * Converts unicodes to encoded &#92;uxxxx and writes out any of the
-     * characters in specialSaveChars with a preceding slash
+     * characters in SPECIAL_SAVE_CHARS with a preceding slash
      */
     private String saveConvert(String theString, boolean escapeSpace) {
         int len = theString.length();
@@ -291,7 +293,7 @@ public class OrderProperties extends Properties {
                         outBuffer.append(toHex((aChar >> 4) & 0xF));
                         outBuffer.append(toHex(aChar & 0xF));
                     } else {
-                        if (specialSaveChars.indexOf(aChar) != -1)
+                        if (SPECIAL_SAVE_CHARS.indexOf(aChar) != -1)
                             outBuffer.append('\\');
                         outBuffer.append(aChar);
                     }

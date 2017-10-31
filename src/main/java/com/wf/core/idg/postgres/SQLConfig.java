@@ -29,21 +29,21 @@ public class SQLConfig {
 		return MessageFormat.format(basicSQL, params);
 	}
 
-	public static final String databaseCheck = readFile("database_check");
+	public static final String DATABASE_CHECK = readFile("database_check");
 
-	public static final String databaseCreate = readFile("database_create");
+	public static final String DATABASE_CREATE = readFile("database_create");
 
-	public static final String nextvalSelect = readFile("nextval_select");
+	public static final String NEXTVAL_SELECT = readFile("nextval_select");
 
-	public static final String idgAll = readFile("idg_all");
+	public static final String IDG_ALL = readFile("idg_all");
 
-	public static final String idgCurrent = readFile("idg_current");
+	public static final String IDG_CURRENT = readFile("idg_current");
 	
-	public static final String idgStep = readFile("idg_step");
+	public static final String IDG_STEP = readFile("idg_step");
 
-	public static final String idgExist = readFile("idg_exist");
+	public static final String IDG_EXIST = readFile("idg_exist");
 
-	public static final String idgCreate = readFile("idg_create");
+	public static final String IDG_CREATE = readFile("idg_create");
 
-	public static final String idgDelete = readFile("idg_delete");
+	public static final String IDG_DELETE = readFile("idg_delete");
 }

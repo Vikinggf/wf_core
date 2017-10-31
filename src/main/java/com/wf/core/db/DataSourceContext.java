@@ -9,21 +9,21 @@ public class DataSourceContext {
 	public final static String DATA_SOURCE_READ_MYCAT = "dataSourceReadMycat";
 	public final static String DATA_SOURCE_WRITE_MYCAT = "dataSourceWriteMycat";
 
-	private static final ThreadLocal<String> contextHolder = new ThreadLocal<String>();
+	private static final ThreadLocal<String> CONTEXT_HOLDER = new ThreadLocal<String>();
 
 	public static void setCustomerType(String customerType) {
-	        contextHolder.set(customerType);  
+	        CONTEXT_HOLDER.set(customerType);
 	    }
 
 	public static String getCustomerType() {
-	        return contextHolder.get();  
+	        return CONTEXT_HOLDER.get();
 	    }  
 	      
 	public static void clearCustomerType() {
-	        contextHolder.remove();  
+	        CONTEXT_HOLDER.remove();
 	    }
 	public static void setCustomerTypeByNo(String datasource,String shardNo) {
 		String shard=datasource+shardNo;
-		contextHolder.set(shard);
+		CONTEXT_HOLDER.set(shard);
 	}
 }
