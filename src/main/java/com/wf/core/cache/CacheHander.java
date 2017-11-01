@@ -29,7 +29,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（当超过此时间后，任务将不再加锁）
      * @param task 任务
      */
-    public <T> T lock(String key, LockTask<T> task, Long expireTime);
+    public <T> T lock(String key, LockTask<T> task, Integer expireTime);
 
     /**
      * 缓存数据。数据缓存两小时后强制重新查询
@@ -46,7 +46,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（秒）
      * @return
      */
-    public <T> T cache(String key, CacheData data, Long expireTime);
+    public <T> T cache(String key, CacheData data, Integer expireTime);
 
     /**
      * 获取一个string值
@@ -77,7 +77,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（秒）
      * @return
      */
-    public Boolean set(String key, Object value, Long expireTime);
+    public Boolean set(String key, Object value, Integer expireTime);
 
     /**
      * 删除数据
@@ -116,7 +116,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public long incrBy(String key, long increment, Long expireTime);
+    public long incrBy(String key, long increment, Integer expireTime);
 
     /**
      * 原子性增量实现(当前值)
@@ -131,7 +131,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public long incr(String key, Long expireTime);
+    public long incr(String key, Integer expireTime);
 
     /**
      * 获取集合的size
@@ -161,7 +161,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public Boolean expire(String key, Long expireTime);
+    public Boolean expire(String key, Integer expireTime);
 
     /**
      * 不存在时设置
@@ -169,7 +169,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public Boolean setNX(String key, Long expireTime);
+    public Boolean setNX(String key, Integer expireTime);
 
     /**
      * 不存在时设置
@@ -178,7 +178,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public Boolean setNX(String key, Object value, Long expireTime);
+    public Boolean setNX(String key, Object value, Integer expireTime);
 
     /**
      * 将数据放入list中
@@ -187,7 +187,7 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public Long lpush(String key, Long expireTime, Object...objects);
+    public Long lpush(String key, Integer expireTime, Object...objects);
 
     /**
      * 获取list的总长度
@@ -229,7 +229,7 @@ public interface CacheHander {
      * @param target
      * @param expireTime
      */
-    public void zincrby(String key,double score,String target,Long expireTime);
+    public void zincrby(String key,double score,String target,Integer expireTime);
 
     /**
      * 排行榜功能添加积分
@@ -246,7 +246,7 @@ public interface CacheHander {
      * @param target
      * @param expireTime
      */
-    long zadd(String key, double score, String target, Long expireTime);
+    long zadd(String key, double score, String target, Integer expireTime);
 
     /**
      * 排行榜功能-获取排行榜

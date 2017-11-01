@@ -24,7 +24,7 @@ import java.util.*;
  * @date 2016年3月3日
  */
 public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
-    private static Long defaultCacheTime = 2 * 60 * 60L;
+    private static Integer defaultCacheTime = 2 * 60 * 60;
     private JedisPoolConfig jedisPoolConfig;
     private JedisPool jedisPool;
     private String host;
@@ -104,7 +104,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T cache(String key, CacheData data, Long expireTime) {
+    public <T> T cache(String key, CacheData data, Integer expireTime) {
         Object result = this.get(key);
         if (result == null) {
             result = data.findData();
@@ -133,11 +133,11 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public Boolean set(String key, Object value, Long expireTime) {
+    public Boolean set(String key, Object value, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         jedis.set(serializeKey(key), serialize(value));
         if (expireTime != null)
-            jedis.expire(key, expireTime.intValue());
+            jedis.expire(key, expireTime);
         jedis.close();
         return true;
     }
@@ -148,7 +148,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public Boolean setNX(String key, Long expireTime) {
+    public Boolean setNX(String key, Integer expireTime) {
         return setNX(key, Y, expireTime);
     }
 
@@ -178,7 +178,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public <T> T lock(String key, LockTask<T> task, Long expireTime) {
+    public <T> T lock(String key, LockTask<T> task, Integer expireTime) {
         byte[] bkey = serializeKey(key);
         Boolean result = null;
         Jedis jedis = jedisPool.getResource();
@@ -186,7 +186,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             result = jedis.setnx(bkey, YES) == 1;
             if (result == true) {
                 if (expireTime != null)
-                    jedis.expire(bkey, expireTime.intValue());
+                    jedis.expire(bkey, expireTime);
                 try {
                     return task.work();
                 } catch (Throwable t) {
@@ -208,7 +208,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public long incr(String key, Long expireTime) {
+    public long incr(String key, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         Long count = jedis.incr(serializeKey(key));
         if (count == 1 && expireTime != null)
@@ -223,7 +223,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public long incrBy(String key, long increment, Long expireTime) {
+    public long incrBy(String key, long increment, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         Long count = jedis.incrBy(serializeKey(key), increment);
         if (expireTime != null)
@@ -256,9 +256,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public Boolean expire(String key, Long expireTime) {
+    public Boolean expire(String key, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
-        boolean result = jedis.expire(key, expireTime.intValue()) == 1;
+        boolean result = jedis.expire(key, expireTime) == 1;
         jedis.close();
         return result;
     }
@@ -272,19 +272,19 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public Boolean setNX(String key, Object value, Long expireTime) {
+    public Boolean setNX(String key, Object value, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         byte[] bvalue = serialize(value);
         Boolean result = jedis.setnx(bkey, bvalue) == 1;
         if (result && expireTime != null)
-            jedis.expire(bkey, expireTime.intValue());
+            jedis.expire(bkey, expireTime);
         jedis.close();
         return result;
     }
 
     @Override
-    public Long lpush(String key, Long expireTime, Object...value) {
+    public Long lpush(String key, Integer expireTime, Object...value) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         byte[][] bvalues = new byte[value.length][];
@@ -292,7 +292,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             bvalues[i] = serialize(value[i]);
         Long result = jedis.lpush(bkey, bvalues);
         if (expireTime != null)
-            jedis.expire(bkey, expireTime.intValue());
+            jedis.expire(bkey, expireTime);
         jedis.close();
         return result;
     }
@@ -333,12 +333,12 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public void zincrby(String key, double score, String target, Long expireTime) {
+    public void zincrby(String key, double score, String target, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         jedis.zincrby(bkey, score, serialize(target));
         if (expireTime != null)
-            jedis.expire(bkey, expireTime.intValue());
+            jedis.expire(bkey, expireTime);
         jedis.close();
     }
 
@@ -348,12 +348,12 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public long zadd(String key, double score, String target, Long expireTime) {
+    public long zadd(String key, double score, String target, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         long vlaue = jedis.zadd(bkey, score, serialize(target));
         if (expireTime != null)
-            jedis.expire(bkey, expireTime.intValue());
+            jedis.expire(bkey, expireTime);
         jedis.close();
         return vlaue;
     }
