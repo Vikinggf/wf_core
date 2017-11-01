@@ -1,17 +1,17 @@
 package com.wf.core.persistence;
 
 public class IsolationLevelThreadLocal {
-    private final static ThreadLocal<Integer> isolationLevelThreadLocal = new ThreadLocal<>();
+    private final static ThreadLocal<Integer> ISOLATION_LEVEL_THREADLOCAL = new ThreadLocal<>();
 
     public static void setIsolationLevel(Integer isolationLevel) {
-        isolationLevelThreadLocal.set(isolationLevel);
+        ISOLATION_LEVEL_THREADLOCAL.set(isolationLevel);
     }
 
     public static Integer getIsolationLevel() {
-        return isolationLevelThreadLocal.get();
+        return ISOLATION_LEVEL_THREADLOCAL.get();
     }
 
     public static void cleanIsolationLevel() {
-        isolationLevelThreadLocal.remove();
+        ISOLATION_LEVEL_THREADLOCAL.remove();
     }
 }

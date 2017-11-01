@@ -203,7 +203,7 @@ public class PostgresIDGeneratorFactory {
 	 */
 	private void checkIdgRecord(ConnectionBean bean, String name) throws SQLException {
 		//验证记录是否存在且步长正确
-		ResultSet rs = bean.getStatement().executeQuery(parseSQL(idgStep, name));
+		ResultSet rs = bean.getStatement().executeQuery(parseSQL(IDG_STEP, name));
 		if (rs.next()) {		//记录存在
 			int step = rs.getInt(1);
 			if (step != totalConnection) {
@@ -215,7 +215,7 @@ public class PostgresIDGeneratorFactory {
 			if (index != 0)
 				index = 0 - bean.getIndex();
 			index += totalConnection;
-			bean.getStatement().execute(parseSQL(idgCreate, name, totalConnection + "", index + bean.getConfig().getStart() + "", bean.getConfig().getCache() + ""));
+			bean.getStatement().execute(parseSQL(IDG_CREATE, name, totalConnection + "", index + bean.getConfig().getStart() + "", bean.getConfig().getCache() + ""));
 			logger.info("初始化" + name + ":current=" + index + ",step=" + totalConnection);
 		}
 		rs.close();
@@ -304,13 +304,13 @@ public class PostgresIDGeneratorFactory {
 				Statement statement = bean.getConn().createStatement();
 				count++;
 				long value = -1;
-				ResultSet rs = statement.executeQuery(parseSQL(idgExist, name));
+				ResultSet rs = statement.executeQuery(parseSQL(IDG_EXIST, name));
 				if (!rs.next()) {
 					stepOk = false;
 					rs.close();
 				} else {
 					rs.close();
-					rs = statement.executeQuery(parseSQL(idgCurrent, name));
+					rs = statement.executeQuery(parseSQL(IDG_CURRENT, name));
 					if (rs.next()) {								//存在子元素，首先确认value的值，再处理标记位
 						value = rs.getLong(1);
 						if (stepOk) {								//stepOk为false，不需要计算步长是否正确
@@ -348,11 +348,11 @@ public class PostgresIDGeneratorFactory {
 				int index = connList.get(0).getConfig().getStart();
 				for (ConfigBean bean : connList) {
 					Statement statement = bean.getConn().createStatement();
-					ResultSet rs = statement.executeQuery(parseSQL(idgExist, name));
+					ResultSet rs = statement.executeQuery(parseSQL(IDG_EXIST, name));
 					if (rs.next())
-						statement.execute(parseSQL(idgDelete, name));
+						statement.execute(parseSQL(IDG_DELETE, name));
 					rs.close();
-					statement.execute(parseSQL(idgCreate, name, count + "", index++ + startValue + "", bean.getConfig().getCache() + ""));
+					statement.execute(parseSQL(IDG_CREATE, name, count + "", index++ + startValue + "", bean.getConfig().getCache() + ""));
 					statement.close();
 				}
 				//4.提交事务
@@ -389,7 +389,7 @@ public class PostgresIDGeneratorFactory {
 			}
 			try {
 				Statement statement = conn.createStatement();
-				ResultSet rs = statement.executeQuery(parseSQL(idgAll));
+				ResultSet rs = statement.executeQuery(parseSQL(IDG_ALL));
 				while (rs.next()) {
 					ids.add(rs.getString(1));
 				}
@@ -466,9 +466,9 @@ public class PostgresIDGeneratorFactory {
 				Statement statement = conn.createStatement();
 				String db = config.getDatabase();
 				try {
-					ResultSet rs = statement.executeQuery(parseSQL(databaseCheck, db));
+					ResultSet rs = statement.executeQuery(parseSQL(DATABASE_CHECK, db));
 					if (!rs.next()) {
-						statement.execute(parseSQL(databaseCreate, db));
+						statement.execute(parseSQL(DATABASE_CREATE, db));
 						logger.warn(config.getHost() + ":" + config.getPort() + " 创建数据库：" + db);
 					}
 					rs.close();

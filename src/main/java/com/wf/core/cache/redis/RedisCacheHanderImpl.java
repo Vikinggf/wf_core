@@ -24,7 +24,7 @@ import java.util.*;
  * @date 2016年3月3日
  */
 public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
-    private static Long defaultCacheTime = 2 * 60 * 60l;
+    private static Long defaultCacheTime = 2 * 60 * 60L;
     private JedisPoolConfig jedisPoolConfig;
     private JedisPool jedisPool;
     private String host;

@@ -51,7 +51,7 @@ public class PostgresIDGenerator {
 						boolean[] notCheck = new boolean[factory.getTotalConnection()];
 						for (int i = 0; i < notCheck.length; i++)
 							notCheck[i] = true;
-						String sql = SQLConfig.parseSQL(SQLConfig.nextvalSelect, name);
+						String sql = SQLConfig.parseSQL(SQLConfig.NEXTVAL_SELECT, name);
 						param = new IdgParam(name, false, sql, notCheck);
 						stringIdgParams.put(strEntity, param);
 					}
@@ -71,7 +71,7 @@ public class PostgresIDGenerator {
 						boolean[] notCheck = new boolean[factory.getTotalConnection()];
 						for (int i = 0; i < notCheck.length; i++)
 							notCheck[i] = true;
-						String sql = SQLConfig.parseSQL(SQLConfig.nextvalSelect, name);
+						String sql = SQLConfig.parseSQL(SQLConfig.NEXTVAL_SELECT, name);
 						boolean inttype = true;
 						try {
 							Field field = clazz.getDeclaredField("id");

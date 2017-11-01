@@ -99,9 +99,9 @@ package com.wf.core.persistence;
 //    public static int getCount(final String sql, final Connection connection,
 //    							final MappedStatement mappedStatement, final Object parameterObject,
 //    							final BoundSql boundSql, Log log) throws SQLException {
-//    	String dbName = Global.getConfig("jdbc.type");
+//    	String DB_NAME = Global.getConfig("jdbc.type");
 //		final String countSql;
-//		if("oracle".equals(dbName)){
+//		if("oracle".equals(DB_NAME)){
 //			countSql = "select count(1) from (" + sql + ") tmp_count";
 //		}else{
 //			countSql = "select count(1) from (" + removeOrders(sql) + ") tmp_count";

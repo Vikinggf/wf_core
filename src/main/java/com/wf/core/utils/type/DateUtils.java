@@ -15,7 +15,7 @@ import java.util.*;
  */
 public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
 
-    private static final String[] parsePatterns = {"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
+    private static final String[] PARSE_PATTERNS = {"yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm",
             "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm"};
 
     /**
@@ -224,7 +224,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
             return null;
         }
         try {
-            return parseDate(str.toString(), parsePatterns);
+            return parseDate(str.toString(), PARSE_PATTERNS);
         } catch (ParseException e) {
             return null;
         }
