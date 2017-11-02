@@ -42,8 +42,9 @@ public class FastDFSUtils {
                 fis.read(file_buff);
             }
             String fileId = getStorageClient().upload_file1(file_buff, getFileExt(file.getName()), null);
-            if (!fileId.startsWith("/"))
+            if (!fileId.startsWith("/")) {
                 fileId = "/" + fileId;
+            }
             return fileId;
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,8 +64,9 @@ public class FastDFSUtils {
     public static String uploadFile(MultipartFile file) {
         try {
             String fileId = getStorageClient().upload_file1(file.getBytes(), getFileExt(file.getOriginalFilename()), null);
-            if (!fileId.startsWith("/"))
+            if (!fileId.startsWith("/")) {
                 fileId = "/" + fileId;
+            }
             return fileId;
         } catch (Exception e) {
             logger.error("上传失败", e);
@@ -73,8 +75,9 @@ public class FastDFSUtils {
     }
 
     public static String getDomainUri(String relativePath) {
-        if (relativePath == null || "".equals(relativePath))
+        if (relativePath == null || "".equals(relativePath)) {
             return "";
+        }
         return getDomainUri() + relativePath;
     }
 
@@ -173,8 +176,9 @@ public class FastDFSUtils {
             ByteArrayOutputStream pngOut = new ByteArrayOutputStream();
             ImageIO.write(output, "PNG", pngOut);
             String imagePath = getStorageClient().upload_file1(pngOut.toByteArray(), "png", null);
-            if (!imagePath.startsWith("/"))
+            if (!imagePath.startsWith("/")) {
                 imagePath = "/" + imagePath;
+            }
             logger.info("saved image:" + imagePath);
             return imagePath;
         } catch (IOException | MyException e) {
@@ -198,8 +202,9 @@ public class FastDFSUtils {
     private static StorageClient1 getStorageClient() {
         if (storageClient == null) {
             String[] szTrackerServers = Global.getConfig("fastdfs.tracker_server").split(";");
-            if (szTrackerServers.length == 0)
+            if (szTrackerServers.length == 0) {
                 throw new RuntimeException("未找到tracker_server的配置");
+            }
             InetSocketAddress[] tracker_servers = new InetSocketAddress[szTrackerServers.length];
             ClientGlobal.setG_secret_key(Global.getConfig("fastdfs.http.secret_key"));
             ClientGlobal.setG_connect_timeout(5 * 1000);
@@ -208,8 +213,9 @@ public class FastDFSUtils {
             ClientGlobal.setG_anti_steal_token(Boolean.getBoolean(Global.getConfig("fastdfs.http.anti_steal_token")));
             for (int i = 0; i < szTrackerServers.length; i++) {
                 String[] parts = szTrackerServers[i].split("\\:", 2);
-                if (parts.length != 2)
+                if (parts.length != 2) {
                     throw new RuntimeException("配置错误： host:port");
+                }
                 tracker_servers[i] = new InetSocketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
             }
             ClientGlobal.setG_tracker_group(new TrackerGroup(tracker_servers));
