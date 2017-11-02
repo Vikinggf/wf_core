@@ -36,16 +36,17 @@ public class MVCExceptionHandle {
             MethodArgumentNotValidException me = (MethodArgumentNotValidException) e;
             StringBuilder sb = new StringBuilder();
             List<ObjectError> errors = me.getBindingResult().getAllErrors();
-            if (errors.size() > 1)
+            if (errors.size() > 1) {
                 sb.append("共" + errors.size() + "个错误；");
-            for (ObjectError error : errors)
+            }
+            for (ObjectError error : errors) {
                 sb.append(error.getDefaultMessage()).append("，");
+            }
             sb.delete(sb.length() - 1, sb.length());
             String s = sb.toString();
             logger.info("参数非法：" + s);
             return new ErrorRspBean(400, s);
         } else if (e instanceof BaseController.LbmOAuthException) {
-            //        	response.setStatus(401);
             return new ErrorRspBean(401, "用户没有登录");
         } else if (e instanceof BaseController.ChannelErrorException) {
             return new ErrorRspBean(402, "渠道不存在或被禁用");
@@ -60,8 +61,9 @@ public class MVCExceptionHandle {
         } else if (e instanceof UnauthorizedException) {
             logger.warn(e.getMessage());
             Throwable t = e.getCause();
-            if (t != null)
+            if (t != null) {
                 logger.info(t.getMessage());
+            }
             return new ErrorRspBean(403, "禁止访问");
         } else if (e instanceof ConstraintViolationException) {
             List<String> list = BeanValidators.extractMessage((ConstraintViolationException) e);

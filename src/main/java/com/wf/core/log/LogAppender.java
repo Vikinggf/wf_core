@@ -74,6 +74,7 @@ public class LogAppender extends AppenderSkeleton {
         final String key = this.redisKey;
 
         fixedThreadPool.execute(new Runnable() {
+            @Override
             public void run() {
                 LogCommand lc = new LogCommand();
                 String ip = IpGetter.getIp();
@@ -117,10 +118,12 @@ public class LogAppender extends AppenderSkeleton {
         });
     }
 
+    @Override
     public void close() {
         this.closed = true;
     }
 
+    @Override
     public boolean requiresLayout() {
         return false;
     }
