@@ -109,7 +109,7 @@ public class Global {
     /**
      * 页面获取常量
      *
-     * @see ${fns:getConst('YES')}
+     * @see {fns:getConst('YES')}
      */
     public static Object getConst(String field) {
         try {

@@ -87,8 +87,9 @@ public class FastDFSUtils {
      * @return
      */
     public static String getSaveDomainUri() {
-        if (saveDomainCdnUri == null)
+        if (saveDomainCdnUri == null) {
             saveDomainCdnUri = Global.getConfig("fastdfs.save.uri");
+        }
         return saveDomainCdnUri;
     }
 
@@ -98,8 +99,9 @@ public class FastDFSUtils {
      * @return
      */
     public static String getDomainUri() {
-        if (domainCdnUri == null)
+        if (domainCdnUri == null) {
             domainCdnUri = Global.getConfig("fastdfs.dfs.uri");
+        }
         return domainCdnUri;
     }
 

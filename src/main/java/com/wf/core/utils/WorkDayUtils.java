@@ -131,7 +131,7 @@ public class WorkDayUtils {
      * @return
      */
     public int getHolidays(Calendar d1, Calendar d2) {
-        return this.getDaysBetween(d1, d2) - this.getWorkingDay(d1, d2);
+        return getDaysBetween(d1, d2) - this.getWorkingDay(d1, d2);
     }
 
 }
