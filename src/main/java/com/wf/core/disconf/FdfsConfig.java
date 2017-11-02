@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Scope("singleton")
-@DisconfFile(filename = "fdfs.conf",app="wf_common")
+@DisconfFile(filename = "fdfs.properties",app="wf_common")
 public class FdfsConfig {
 }
