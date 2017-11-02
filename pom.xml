@@ -74,13 +74,14 @@
     </repositories>
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <url>${distribution.repository.url}/snapshots</url>
-        </snapshotRepository>
         <repository>
             <id>releases</id>
-            <url>${distribution.repository.url}/releases</url>
+            <url>http://10.33.85.241:4000/content/repositories/releases</url>
         </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>http://10.33.85.241:4000/content/repositories/snapshots</url>
+        </snapshotRepository>
     </distributionManagement>
+
 </project>
