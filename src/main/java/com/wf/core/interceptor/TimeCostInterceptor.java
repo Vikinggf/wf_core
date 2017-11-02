@@ -48,7 +48,6 @@ public class TimeCostInterceptor implements HandlerInterceptor {
             sb.append("Method    : ").append(h.getMethod().getName()).append("\n");
             sb.append("Params    : ").append(getParamString(request.getParameterMap())).append("\n");
             sb.append("URI       : ").append(request.getRequestURI()).append("\n");
-            System.out.println(sb.toString());
 
             if (executeTime > 100) {
                 logger.warn(sb.toString());
