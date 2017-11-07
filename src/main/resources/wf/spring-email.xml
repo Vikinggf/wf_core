@@ -5,8 +5,5 @@
 
     <!--邮件发送服务-->
     <bean id="emailHander" class="com.wf.core.email.EmailHanderImpl"></bean>
-    <bean id="eventHander" class="com.wf.core.event.init.EventHander" />
-    <bean id="randomHander" class="com.wf.core.random.RandomHander" />
-    <bean id="sensitiveWordHander" class="com.wf.core.sensitive.SensitiveWordHanderImpl" />
 
 </beans>
