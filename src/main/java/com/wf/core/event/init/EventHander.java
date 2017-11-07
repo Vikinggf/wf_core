@@ -21,6 +21,6 @@ public class EventHander implements InitializingBean {
     }
 
     public void afterPropertiesSet() throws Exception {
-        rabbitTemplate = (RabbitTemplate) SpringContextHolder.getBean(RabbitTemplate.class);
+        rabbitTemplate = SpringContextHolder.getBean(RabbitTemplate.class);
     }
 }
