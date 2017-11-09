@@ -82,11 +82,7 @@ public class LogAppender extends AppenderSkeleton {
                 lc.setIp(ip);
                 lc.setAppName(appNames);
                 StringBuffer sb = new StringBuffer();
-                String[] errorList = ev.getThrowableStrRep();
-                for (int i = 0; i < errorList.length; i++) {
-                    sb.append(errorList[i]);
-                }
-//                sb.append(ev.getRenderedMessage());
+                sb.append(ev.getRenderedMessage());
                 lc.setContent(sb.toString());
                 Timestamp ts = new Timestamp(ev.getTimeStamp());
                 lc.setDtNow(ts);
