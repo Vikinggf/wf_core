@@ -32,6 +32,9 @@ public class FastDFSUtils {
      * @return 返回Null则为失败
      */
     public static String uploadFile(File file) {
+        if(file == null){
+            return null;
+        }
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(file);
@@ -62,6 +65,9 @@ public class FastDFSUtils {
     }
 
     public static String uploadFile(MultipartFile file) {
+        if(file == null){
+            return null;
+        }
         try {
             String fileId = getStorageClient().upload_file1(file.getBytes(), getFileExt(file.getOriginalFilename()), null);
             if (!fileId.startsWith("/")) {
@@ -111,6 +117,9 @@ public class FastDFSUtils {
      * @return
      */
     public static String roundedImage(String url) {
+        if(url == null){
+            return null;
+        }
         InputStream in = null;
         try {
             if (url.startsWith("https:")) {
@@ -136,6 +145,9 @@ public class FastDFSUtils {
      * @return
      */
     public static String roundedImage(MultipartFile file) {
+        if(file == null){
+            return null;
+        }
         InputStream in = null;
         try {
         	in = file.getInputStream();
