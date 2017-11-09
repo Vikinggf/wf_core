@@ -117,7 +117,7 @@ public class FastDFSUtils {
      * @return
      */
     public static String roundedImage(String url) {
-        if(url == null){
+        if(StringUtils.isBlank(url)){
             return null;
         }
         InputStream in = null;
