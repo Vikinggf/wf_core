@@ -1,27 +1,27 @@
 package com.wf.core.cache;
 
-import java.util.List;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * 缓存服务
  * @author Fe 2016年3月3日
  */
-public interface CacheHander {
-    Logger LOG = LoggerFactory.getLogger(CacheHander.class);
+public interface JsonCacheHander {
+    Logger LOG = LoggerFactory.getLogger(JsonCacheHander.class);
     String Y = "Y";
     byte[] NULL = "(nil)".getBytes();
-    byte[] YES = Y.getBytes();
+    String YES = Y;
 
     /**
      * 对执行的任务进行加锁（最多两小时）
      * @param key 锁的KEY
      * @param task 任务
      */
-    public <T> T lock(String key, LockTask<T> task);
+    public String lock(String key, LockTask<String> task);
 
     /**
      * 对执行的任务进行加锁。
@@ -29,7 +29,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（当超过此时间后，任务将不再加锁）
      * @param task 任务
      */
-    public <T> T lock(String key, LockTask<T> task, Integer expireTime);
+    public String lock(String key, LockTask<String> task, Integer expireTime);
 
     /**
      * 缓存数据。数据缓存两小时后强制重新查询
@@ -37,7 +37,7 @@ public interface CacheHander {
      * @param data 数据来源
      * @return
      */
-    public <T> T cache(String key, CacheData data);
+    public String cache(String key, JsonCacheData data);
 
     /**
      * 缓存数据。数据缓存expireTime秒后强制重新查询
@@ -46,7 +46,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（秒）
      * @return
      */
-    public <T> T cache(String key, CacheData data, Integer expireTime);
+    public String cache(String key, JsonCacheData data, Integer expireTime);
 
     /**
      * 获取一个string值
@@ -60,7 +60,7 @@ public interface CacheHander {
      * @param key 缓存的key
      * @return
      */
-    public <T> T get(String key);
+    public String get(String key);
 
     /**
      * 设置缓存数据。数据将缓存两小时
@@ -68,7 +68,7 @@ public interface CacheHander {
      * @param value 缓存的value
      * @return
      */
-    public Boolean set(String key, Object value);
+    public Boolean set(String key, String value);
 
     /**
      * 设置缓存数据
@@ -77,7 +77,7 @@ public interface CacheHander {
      * @param expireTime 超时时间（秒）
      * @return
      */
-    public Boolean set(String key, Object value, Integer expireTime);
+    public Boolean set(String key, String value, Integer expireTime);
 
     /**
      * 删除数据
@@ -85,7 +85,7 @@ public interface CacheHander {
      * @param keys 缓存的key（多个）
      * @return
      */
-    public Boolean delete(String key, String...keys);
+    public Boolean delete(String key, String... keys);
 
     /**
      * 返回库里面存在的key的集合，左模糊
@@ -178,16 +178,16 @@ public interface CacheHander {
      * @param expireTime
      * @return
      */
-    public Boolean setNX(String key, Object value, Integer expireTime);
+    public Boolean setNX(String key, String value, Integer expireTime);
 
     /**
      * 将数据放入list中
      * @param key
-     * @param objects
+     * @param str
      * @param expireTime
      * @return
      */
-    public Long lpush(String key, Integer expireTime, Object...objects);
+    public Long lpush(String key, Integer expireTime, String... str);
 
     /**
      * 获取list的总长度
@@ -203,7 +203,7 @@ public interface CacheHander {
      * @param end
      * @return
      */
-    public <T> List<T> lrange(String key, long start, long end);
+    public List<String> lrange(String key, long start, long end);
 
     /**
      * 从list中删除部分数据
@@ -220,7 +220,7 @@ public interface CacheHander {
      * @param score
      * @param target
      */
-    public void zincrby(String key,double score,String target);
+    public void zincrby(String key, double score, String target);
 
     /**
      * 排行榜功能添加积分
@@ -229,7 +229,7 @@ public interface CacheHander {
      * @param target
      * @param expireTime
      */
-    public void zincrby(String key,double score,String target,Integer expireTime);
+    public void zincrby(String key, double score, String target, Integer expireTime);
 
     /**
      * 排行榜功能添加积分
@@ -263,7 +263,7 @@ public interface CacheHander {
      * @param member
      * @return
      */
-    long zrem(String key,String... member);
+    long zrem(String key, String... member);
 
     /**
      * 获取指定成员的排名
@@ -271,7 +271,7 @@ public interface CacheHander {
      * @param member
      * @return
      */
-    Long zrevrank(String key,String member);
+    Long zrevrank(String key, String member);
 
     /**
      * 获取指定成员的分值
@@ -279,7 +279,7 @@ public interface CacheHander {
      * @param member
      * @return
      */
-    Double zscore(String key,String member);
+    Double zscore(String key, String member);
 
     /**
      * 获取当前服务器时间：毫秒
@@ -296,10 +296,9 @@ public interface CacheHander {
      * @param waitTime   每次尝试等待的时间, null 会设成 5
      * @param expireTime 锁定的时间, null 会设成 30, 当超过此时间后，任务将不再加锁
      * @param task       任务
-     * @param <T>        返回类型
      * @return
      */
-    <T> T rlock(String key, int retry, Long waitTime, Long expireTime, LockTask<T> task);
+    String rlock(String key, int retry, Long waitTime, Long expireTime, LockTask<String> task);
 
     /**
      * 对执行的任务进行加锁（最多30秒）
@@ -308,7 +307,5 @@ public interface CacheHander {
      * @param key  锁的KEY
      * @param task 任务
      */
-    <T> T rlock(String key, LockTask<T> task);
-
-
+    String rlock(String key, LockTask<String> task);
 }

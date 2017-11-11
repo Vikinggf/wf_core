@@ -7,18 +7,18 @@
        xsi:schemaLocation="
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
-    <bean id="cacheRedissonClient" class="com.wf.core.cache.redis.redisson.CacheRedissonClient">
+    <bean id="cacheRedissonClient_forjson" class="com.wf.core.cache.redis.redisson.CacheRedissonClient">
         <property name="host" value="${cache.host}" />
         <property name="port" value="${cache.port}" />
     </bean>
-    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+    <bean id="jedisPoolConfig_forjson" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxIdle" value="${cache.maxIdle}"/>
         <property name="testOnBorrow" value="${cache.testOnBorrow}"/>
     </bean>
-    <bean id="redisCacheHander" class="com.wf.core.cache.redis.RedisCacheHanderImpl">
-        <property name="jedisPoolConfig" ref="jedisPoolConfig"/>
+    <bean id="redisCacheHander_forjson" class="com.wf.core.cache.redis.JsonRedisCacheHanderImpl">
+        <property name="jedisPoolConfig" ref="jedisPoolConfig_forjson"/>
         <property name="host" value="${cache.host}"/>
         <property name="port" value="${cache.port}"/>
-        <property name="cacheRedissonClient" ref="cacheRedissonClient"/>
+        <property name="cacheRedissonClient" ref="cacheRedissonClient_forjson"/>
     </bean>
 </beans>

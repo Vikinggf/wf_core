@@ -5,6 +5,7 @@ import com.wf.core.cache.CacheHander;
 import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
 import com.wf.core.cache.exception.CacheException;
+import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -30,12 +31,21 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     private String host;
     private int port;
 
+    public static final int defaultRetryCount = 3;
+    public static final long defaultWaitTime = 5L;
+    public static final long defaultLeaseTime = 30L;
+
+    private CacheRedissonClient cacheRedissonClient;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         jedisPool = new JedisPool(jedisPoolConfig, host, port);
         LOG.info("redis连接池已经创建：" + host + " " + port);
     }
 
+    public void setCacheRedissonClient(CacheRedissonClient cacheRedissonClient) {
+        this.cacheRedissonClient = cacheRedissonClient;
+    }
 
     public JedisPoolConfig getJedisPoolConfig() {
         return jedisPoolConfig;
@@ -136,8 +146,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     public Boolean set(String key, Object value, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         jedis.set(serializeKey(key), serialize(value));
-        if (expireTime != null)
+        if (expireTime != null) {
             jedis.expire(key, expireTime);
+        }
         jedis.close();
         return true;
     }
@@ -158,13 +169,15 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public Boolean delete(String key, String...keys) {
+    public Boolean delete(String key, String... keys) {
         Jedis jedis = jedisPool.getResource();
         int deleteCount = 0;
-        if (key != null)
+        if (key != null) {
             deleteCount += jedis.del(serializeKey(key));
-        for (String k : keys)
+        }
+        for (String k : keys) {
             deleteCount += jedis.del(serializeKey(k));
+        }
         jedis.close();
         return deleteCount != 0;
     }
@@ -229,7 +242,8 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         if (expireTime != null)
             jedis.expire(key, expireTime.intValue());
         jedis.close();
-        return count;}
+        return count;
+    }
 
     @Override
     public long scard(String key) {
@@ -277,22 +291,25 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         byte[] bkey = serializeKey(key);
         byte[] bvalue = serialize(value);
         Boolean result = jedis.setnx(bkey, bvalue) == 1;
-        if (result && expireTime != null)
+        if (result && expireTime != null) {
             jedis.expire(bkey, expireTime);
+        }
         jedis.close();
         return result;
     }
 
     @Override
-    public Long lpush(String key, Integer expireTime, Object...value) {
+    public Long lpush(String key, Integer expireTime, Object... value) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         byte[][] bvalues = new byte[value.length][];
-        for (int i = 0; i < bvalues.length; i++)
+        for (int i = 0; i < bvalues.length; i++) {
             bvalues[i] = serialize(value[i]);
+        }
         Long result = jedis.lpush(bkey, bvalues);
-        if (expireTime != null)
+        if (expireTime != null) {
             jedis.expire(bkey, expireTime);
+        }
         jedis.close();
         return result;
     }
@@ -312,11 +329,13 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         byte[] bkey = serializeKey(key);
         List<byte[]> list = jedis.lrange(bkey, start, end);
         jedis.close();
-        if (list == null)
+        if (list == null) {
             return new ArrayList<>();
+        }
         List<Object> result = new ArrayList<>(list.size());
-        for (byte[] data : list)
+        for (byte[] data : list) {
             result.add(deserialize(data));
+        }
         return (List<T>) result;
     }
 
@@ -337,8 +356,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         jedis.zincrby(bkey, score, serialize(target));
-        if (expireTime != null)
+        if (expireTime != null) {
             jedis.expire(bkey, expireTime);
+        }
         jedis.close();
     }
 
@@ -352,8 +372,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
         long vlaue = jedis.zadd(bkey, score, serialize(target));
-        if (expireTime != null)
+        if (expireTime != null) {
             jedis.expire(bkey, expireTime);
+        }
         jedis.close();
         return vlaue;
     }
@@ -378,8 +399,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     public long zrem(String key, String... members) {
         Jedis jedis = jedisPool.getResource();
         byte[][] bvalues = new byte[members.length][];
-        for (int i = 0; i < bvalues.length; i++)
+        for (int i = 0; i < bvalues.length; i++) {
             bvalues[i] = serialize(members[i]);
+        }
         long value = jedis.zrem(serializeKey(key), bvalues);
         jedis.close();
         return value;
@@ -388,7 +410,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     @Override
     public Long zrevrank(String key, String member) {
         Jedis jedis = jedisPool.getResource();
-        Long value = jedis.zrevrank(serializeKey(key),serialize(member));
+        Long value = jedis.zrevrank(serializeKey(key), serialize(member));
         jedis.close();
         return value;
     }
@@ -408,5 +430,51 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         long time = Long.valueOf(times.get(0)) * 1000;
         jedis.close();
         return time;
+    }
+
+    @Override
+    public <T> T rlock(String key, LockTask<T> task) {
+        return rlock(key, defaultRetryCount, defaultWaitTime, defaultLeaseTime, task);
+    }
+
+    @Override
+    public <T> T rlock(String key, int retry, Long waitTime, Long expireTime, LockTask<T> task) {
+        Boolean result = null;
+        if (retry <= 0) {
+            retry = defaultRetryCount;
+        }
+        if (waitTime == null) {
+            waitTime = defaultWaitTime;
+        }
+        if (expireTime == null) {
+            expireTime = defaultLeaseTime;
+        }
+        int retryCount = 0;
+        while (retryCount++ < retry) {
+            // TODO: 2017/9/26 这个地方用redisson的锁来进行加锁
+            try {
+                result = cacheRedissonClient.tryLock(key, waitTime, expireTime);
+            } catch (InterruptedException e) {
+                result = false;
+            }
+            if (result == true) {
+                try {
+                    return task.work();
+                } catch (Throwable t) {
+                    LOG.error("锁定任务执行异常", t);
+                    throw new CacheException("锁定任务执行异常", t);
+                } finally {
+                    cacheRedissonClient.unLock(key);
+                }
+            } else {
+                try {
+                    Thread.sleep(8);
+                } catch (InterruptedException e) {
+                    LOG.error("锁定任务线程等待异常", e);
+                    throw new CacheException("锁定任务执行异常", e);
+                }
+            }
+        }
+        throw new CacheException("锁定任务执行异常", new RuntimeException());
     }
 }
