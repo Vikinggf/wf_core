@@ -68,7 +68,7 @@
 
     <repositories>
         <repository>
-            <id>snapshots</id>
+            <id>snapshots-x</id>
             <url>${distribution.repository.url}/snapshots</url>
         </repository>
     </repositories>
