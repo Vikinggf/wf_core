@@ -1,6 +1,8 @@
 package com.wf.core.web.response;
 
-public class BaseRspBean {
+import java.io.Serializable;
+
+public class BaseRspBean implements Serializable {
     private int code;
 
     public BaseRspBean(int code) {

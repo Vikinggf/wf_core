@@ -1,10 +1,12 @@
 package com.wf.core.web.response;
 
+import java.io.Serializable;
+
 /**
  * @author Huguanghui
  * @Date 2016-03-14
  */
-public class ErrorRspBean extends BaseRspBean {
+public class ErrorRspBean extends BaseRspBean implements Serializable {
     private String message;
 
     public ErrorRspBean() {

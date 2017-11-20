@@ -1,6 +1,8 @@
 package com.wf.core.web.response;
 
-public class SuccessRspBean<T> extends BaseRspBean {
+import java.io.Serializable;
+
+public class SuccessRspBean<T> extends BaseRspBean implements Serializable {
     private T data;
 
     public SuccessRspBean() {
