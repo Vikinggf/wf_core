@@ -190,6 +190,15 @@ public interface CacheHander {
     public Long lpush(String key, Integer expireTime, Object...objects);
 
     /**
+     * 将数据放入list中
+     * @param key
+     * @param str
+     * @param expireTime
+     * @return
+     */
+    public Long lpushString(String key, Integer expireTime, String str);
+
+    /**
      * 获取list的总长度
      * @param key
      * @return

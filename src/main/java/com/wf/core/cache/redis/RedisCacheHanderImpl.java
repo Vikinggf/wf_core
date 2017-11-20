@@ -315,6 +315,17 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Long lpushString(String key, Integer expireTime, String str) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = jedis.lpush(key, str);
+        if (expireTime != null) {
+            jedis.expire(key, expireTime);
+        }
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public Long llen(String key) {
         Jedis jedis = jedisPool.getResource();
         Long result = jedis.llen(key);
