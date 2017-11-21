@@ -40,6 +40,7 @@ public class BettingTaskEvent extends TaskEvent {
         this.resturnAmount = resturnAmount;
     }
 
+    @Override
     public Map<String, Object> toMap() {
         Map<String, Object> map = this.doToMap();
         map.put("gameType", this.gameType);

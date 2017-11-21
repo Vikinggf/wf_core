@@ -20,6 +20,7 @@ public class EventHander implements InitializingBean {
         rabbitTemplate.convertAndSend(event.getMqQueue(), event);
     }
 
+    @Override
     public void afterPropertiesSet() throws Exception {
         rabbitTemplate = SpringContextHolder.getBean(RabbitTemplate.class);
     }

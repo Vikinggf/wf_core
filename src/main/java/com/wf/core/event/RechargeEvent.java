@@ -22,10 +22,12 @@ public class RechargeEvent extends TaskEvent {
         this.rechargeAmount = rechargeAmount;
     }
 
+    @Override
     public Map<String, Object> toMap() {
         return null;
     }
 
+    @Override
     public String getMqQueue() {
         return "new_game_task_recharge";
     }

@@ -677,7 +677,7 @@ public class FileUtils extends org.apache.commons.io.FileUtils {
         } else if ("jar".equals(returnFileName) || "var".equals(returnFileName)
                 || "ear".equals(returnFileName)) {
             contentType = "application/java-archive";
-        } else if (returnFileName.equals("doc")) {
+        } else if ("doc".equals(returnFileName)) {
             contentType = "application/msword";
         } else if ("pdf".equals(returnFileName)) {
             contentType = "application/pdf";
