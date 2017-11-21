@@ -4,6 +4,7 @@ import com.wf.core.utils.exception.BusinessCommonException;
 import com.wf.core.utils.exception.HttpClientException;
 import com.wf.core.web.base.BaseController;
 import com.wf.core.web.response.ErrorRspBean;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,22 +45,24 @@ public class MVCExceptionHandle {
             }
             sb.delete(sb.length() - 1, sb.length());
             String s = sb.toString();
-            logger.info("参数非法：" + s);
+            logger.error("参数非法：" + s);
             return new ErrorRspBean(400, s);
         } else if (e instanceof BaseController.LbmOAuthException) {
+            logger.error("用户没有登录"+ ExceptionUtils.getStackTrace(e));
             return new ErrorRspBean(401, "用户没有登录");
         } else if (e instanceof BaseController.ChannelErrorException) {
+            logger.error("渠道不存在或被禁用"+ ExceptionUtils.getStackTrace(e));
             return new ErrorRspBean(402, "渠道不存在或被禁用");
         } else if (e instanceof HttpMessageNotReadableException) {
             HttpMessageNotReadableException le = (HttpMessageNotReadableException) e;
-            logger.info("请传入body:" + le.getMessage());
+            logger.error("请传入body:" + ExceptionUtils.getStackTrace(le));
             return new ErrorRspBean(400, "请传入body");
         } else if (e instanceof BusinessCommonException) {
             BusinessCommonException le = (BusinessCommonException) e;
-            logger.info("业务异常:" + le.getMsg());
+            logger.error("业务异常:" + ExceptionUtils.getStackTrace(le));
             return new ErrorRspBean(le.getCode(), le.getMsg());
         } else if (e instanceof UnauthorizedException) {
-            logger.warn(e.getMessage());
+            logger.error(ExceptionUtils.getStackTrace(e));
             Throwable t = e.getCause();
             if (t != null) {
                 logger.info(t.getMessage());
@@ -67,11 +70,12 @@ public class MVCExceptionHandle {
             return new ErrorRspBean(403, "禁止访问");
         } else if (e instanceof ConstraintViolationException) {
             List<String> list = BeanValidators.extractMessage((ConstraintViolationException) e);
+            logger.error(list.toString() + ExceptionUtils.getStackTrace(e));
             return new ErrorRspBean(400, list.toString());
             } else if (e instanceof HttpClientException) {
             return new ErrorRspBean(400, e.getMessage());
         } else {
-            logger.error("系统异常", e);
+            logger.error("系统异常-{}", ExceptionUtils.getStackTrace(e));
             return new ErrorRspBean(500, "系统异常");
         }
     }
