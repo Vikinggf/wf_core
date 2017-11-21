@@ -45,7 +45,7 @@ public class MVCExceptionHandle {
             }
             sb.delete(sb.length() - 1, sb.length());
             String s = sb.toString();
-            logger.error("参数非法：" + s);
+            logger.error("参数非法：-{}-{}",s,ExceptionUtils.getStackTrace(e));
             return new ErrorRspBean(400, s);
         } else if (e instanceof BaseController.LbmOAuthException) {
             logger.error("用户没有登录"+ ExceptionUtils.getStackTrace(e));
