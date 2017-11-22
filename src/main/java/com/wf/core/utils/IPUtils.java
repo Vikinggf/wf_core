@@ -1,6 +1,7 @@
 package com.wf.core.utils;
 
 import org.apache.shiro.UnavailableSecurityManagerException;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -12,12 +13,17 @@ import javax.servlet.http.HttpServletRequest;
  * @author Fe 2016年9月27日
  */
 public class IPUtils {
+
     /**
-     * 获取request
-     * @returnr
+     * 获取HTTPServletRequest对象
+     * @return
      */
     public static HttpServletRequest getRequest() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            throw new NullPointerException("org.springframework.web.context.request.RequestContextListener未在web.xml中配置");
+        }
+        return ((ServletRequestAttributes) attributes).getRequest();
     }
 
     /**
