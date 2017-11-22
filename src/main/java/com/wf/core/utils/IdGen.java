@@ -6,8 +6,7 @@ package com.wf.core.utils;
 import com.wf.core.utils.encrypt.Encodes;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
+
 
 import java.io.Serializable;
 import java.security.SecureRandom;
@@ -19,8 +18,6 @@ import java.util.UUID;
  * @author www.lbanma.com
  * @version 2013-01-15
  */
-@Service
-@Lazy(false)
 public class IdGen implements SessionIdGenerator {
 
     private static SecureRandom random = new SecureRandom();
