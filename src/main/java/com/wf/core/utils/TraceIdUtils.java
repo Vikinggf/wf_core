@@ -34,7 +34,9 @@ public class TraceIdUtils {
 	public static String getTraceId() {
 		Object obj = getRequest().getAttribute(TRACE_ID);
 		if (obj == null) {
-			return UUID.randomUUID().toString();
+			String traceId = UUID.randomUUID().toString();
+			getRequest().setAttribute(TRACE_ID, traceId);
+			return traceId;
 		}
 		return obj.toString();
 	}
