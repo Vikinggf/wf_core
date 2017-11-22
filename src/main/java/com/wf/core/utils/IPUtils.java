@@ -1,8 +1,8 @@
 package com.wf.core.utils;
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
-import org.apache.shiro.web.subject.WebSubject;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +12,13 @@ import javax.servlet.http.HttpServletRequest;
  * @author Fe 2016年9月27日
  */
 public class IPUtils {
+    /**
+     * 获取request
+     * @returnr
+     */
+    public static HttpServletRequest getRequest() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+    }
 
     /**
      * 获取客户端IP
@@ -20,7 +27,7 @@ public class IPUtils {
      */
     public static String getRemoteAddress() {
         try {
-            return getRemoteAddress((HttpServletRequest) (((WebSubject) SecurityUtils.getSubject()).getServletRequest()));
+            return getRemoteAddress(getRequest());
         } catch (UnavailableSecurityManagerException e) {
             return "127.0.0.1";
         }
