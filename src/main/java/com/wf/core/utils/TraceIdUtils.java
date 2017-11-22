@@ -32,10 +32,11 @@ public class TraceIdUtils {
 	 * @return
 	 */
 	public static String getTraceId() {
-		Object obj = getRequest().getAttribute(TRACE_ID);
+		HttpServletRequest request = getRequest();
+		Object obj = request.getAttribute(TRACE_ID);
 		if (obj == null) {
 			String traceId = UUID.randomUUID().toString();
-			getRequest().setAttribute(TRACE_ID, traceId);
+			request.setAttribute(TRACE_ID, traceId);
 			return traceId;
 		}
 		return obj.toString();
