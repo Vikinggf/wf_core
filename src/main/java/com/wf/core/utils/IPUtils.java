@@ -1,8 +1,9 @@
 package com.wf.core.utils;
 
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
-import org.apache.shiro.web.subject.WebSubject;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,13 +15,25 @@ import javax.servlet.http.HttpServletRequest;
 public class IPUtils {
 
     /**
+     * 获取HTTPServletRequest对象
+     * @return
+     */
+    public static HttpServletRequest getRequest() {
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes == null) {
+            throw new NullPointerException("org.springframework.web.context.request.RequestContextListener未在web.xml中配置");
+        }
+        return ((ServletRequestAttributes) attributes).getRequest();
+    }
+
+    /**
      * 获取客户端IP
      *
      * @return
      */
     public static String getRemoteAddress() {
         try {
-            return getRemoteAddress((HttpServletRequest) (((WebSubject) SecurityUtils.getSubject()).getServletRequest()));
+            return getRemoteAddress(getRequest());
         } catch (UnavailableSecurityManagerException e) {
             return "127.0.0.1";
         }
