@@ -1,5 +1,6 @@
 package com.wf.core.utils;
 
+import com.wf.core.utils.type.StringUtils;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -48,6 +49,22 @@ public class TraceIdUtils {
         traceId = UUID.randomUUID().toString();
         TRACE_ID_THREAD_LOCAL.set(traceId);
         return traceId;
+    }
+
+    /**
+     * 设置traceId，优先从当前HTTP请求作用域中设置，如当前线程不是HTTP请求线程，则保存至当前线程中
+     * @param traceId 要设置的跟踪id
+     */
+    public static void setTraceId(String traceId) {
+        if (StringUtils.isBlank(traceId)) {
+            throw new IllegalArgumentException("traceId不可为空");
+        }
+        HttpServletRequest request = getRequest();
+        if (request != null) {
+            request.setAttribute(TRACE_ID, traceId);
+            return;
+        }
+        TRACE_ID_THREAD_LOCAL.set(traceId);
     }
 
     private static String getTraceIdFromRequest(HttpServletRequest request) {
