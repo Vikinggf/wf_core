@@ -1,11 +1,11 @@
 package com.wf.core.idg.postgres;
 
-import java.text.MessageFormat;
-
 import com.wf.core.idg.util.ClassUtil;
 import com.wf.core.idg.util.IOUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.MessageFormat;
 
 /**
  * sql工具

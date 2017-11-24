@@ -1,14 +1,13 @@
 package com.wf.core.idg.postgres;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.Table;
-
 import com.wf.core.idg.IDGeneratorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.Table;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
