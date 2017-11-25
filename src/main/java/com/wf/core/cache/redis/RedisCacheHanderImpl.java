@@ -6,6 +6,7 @@ import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
 import com.wf.core.cache.exception.CacheException;
 import com.wf.core.cache.redis.redisson.CacheRedissonClient;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -203,7 +204,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
                 try {
                     return task.work();
                 } catch (Throwable t) {
-                    LOG.error("锁定任务执行异常", t);
+                    LOG.error("锁定任务执行异常 ex={}", ExceptionUtils.getStackTrace(t));
                     throw new CacheException("锁定任务执行异常", t);
                 } finally {
                     jedis.del(bkey);
@@ -213,7 +214,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
                 try {
                     Thread.sleep(8);
                 } catch (InterruptedException e) {
-                    LOG.error("锁定任务线程等待异常", e);
+                    LOG.error("锁定任务线程等待异常 ex={}", ExceptionUtils.getStackTrace(e));
                     throw new CacheException("锁定任务执行异常", e);
                 }
             }
@@ -472,7 +473,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
                 try {
                     return task.work();
                 } catch (Throwable t) {
-                    LOG.error("锁定任务执行异常", t);
+                    LOG.error("锁定任务执行异常 ex={}", ExceptionUtils.getStackTrace(t));
                     throw new CacheException("锁定任务执行异常", t);
                 } finally {
                     cacheRedissonClient.unLock(key);
@@ -481,7 +482,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
                 try {
                     Thread.sleep(8);
                 } catch (InterruptedException e) {
-                    LOG.error("锁定任务线程等待异常", e);
+                    LOG.error("锁定任务线程等待异常 ex={}", ExceptionUtils.getStackTrace(e));
                     throw new CacheException("锁定任务执行异常", e);
                 }
             }
