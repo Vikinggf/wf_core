@@ -46,24 +46,23 @@ public class MVCExceptionHandle {
             }
             sb.delete(sb.length() - 1, sb.length());
             String s = sb.toString();
-            logger.error("参数非法：-{}-{}, traceId:{}", s, ExceptionUtils.getStackTrace(e), traceId);
+            logger.error("参数非法 ex={} param={} traceId:{}", s, ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(400, s);
         } else if (e instanceof BaseController.LbmOAuthException) {
-            logger.error("用户没有登录:{}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(401, "用户没有登录");
         } else if (e instanceof BaseController.ChannelErrorException) {
-            logger.error("渠道不存在或被禁用:{}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
+            logger.error("渠道不存在或被禁用 ex={}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(402, "渠道不存在或被禁用");
         } else if (e instanceof HttpMessageNotReadableException) {
             HttpMessageNotReadableException le = (HttpMessageNotReadableException) e;
-            logger.error("请传入body:{}, traceId:{}", ExceptionUtils.getStackTrace(le), traceId);
+            logger.error("请传入body ex={} traceId:{}", ExceptionUtils.getStackTrace(le), traceId);
             return new ErrorRspBean(400, "请传入body");
         } else if (e instanceof BusinessCommonException) {
             BusinessCommonException le = (BusinessCommonException) e;
-            logger.error("业务异常:{}, traceId:{}", ExceptionUtils.getStackTrace(le), traceId);
+            logger.error("业务异常 ex={} traceId:{}", ExceptionUtils.getStackTrace(le), traceId);
             return new ErrorRspBean(le.getCode(), le.getMsg());
         } else if (e instanceof UnauthorizedException) {
-            logger.error("{}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
+            logger.error("ex={} traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
             Throwable t = e.getCause();
             if (t != null) {
                 logger.info(t.getMessage());
@@ -71,12 +70,12 @@ public class MVCExceptionHandle {
             return new ErrorRspBean(403, "禁止访问");
         } else if (e instanceof ConstraintViolationException) {
             List<String> list = BeanValidators.extractMessage((ConstraintViolationException) e);
-            logger.error("{}, traceId:{}", list.toString() + ExceptionUtils.getStackTrace(e), traceId);
+            logger.error("ex={}, traceId:{}", list.toString() + ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(400, list.toString());
         } else if (e instanceof HttpClientException) {
             return new ErrorRspBean(400, e.getMessage());
         } else {
-            logger.error("系统异常:{}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
+            logger.error("ex={}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(500, "系统异常");
         }
     }
