@@ -5,17 +5,17 @@
 
 package com.wf.core.upload.qiniu;
 
+import com.qiniu.util.Auth;
+import com.qiniu.util.StringMap;
 import com.wf.core.upload.UploadFileType;
 import com.wf.core.upload.UploadHander;
 import com.wf.core.upload.UploadToken;
-import com.qiniu.util.Auth;
-import com.qiniu.util.StringMap;
+import org.springframework.beans.factory.InitializingBean;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
-
-import org.springframework.beans.factory.InitializingBean;
 
 public class QiniuUploadHanderImpl implements UploadHander, InitializingBean {
     public static final String YYYYMMDDHHMMSS_PATTERN = "yyyyMMddHHmmssSSS";

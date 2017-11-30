@@ -1,8 +1,7 @@
 package com.wf.core.idg.postgres;
 
-import java.util.UUID;
-
 import javax.transaction.xa.Xid;
+import java.util.UUID;
 
 /**
  * 基于uuid实现的xid

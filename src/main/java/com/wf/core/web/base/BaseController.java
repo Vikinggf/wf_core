@@ -182,6 +182,14 @@ public abstract class BaseController extends MVCExceptionHandle {
 
     public static class ChannelErrorException extends RuntimeException {
         private static final long serialVersionUID = 7308727782750338596L;
+
+        public ChannelErrorException() {
+            super();
+        }
+
+        public ChannelErrorException(String message) {
+            super(message);
+        }
     }
 
     protected String appendUrlParam(String url, String param) {

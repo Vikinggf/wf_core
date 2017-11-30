@@ -1,9 +1,8 @@
 package com.wf.core.idg.postgres;
 
-import java.sql.Connection;
-
 import javax.sql.XAConnection;
 import javax.transaction.xa.Xid;
+import java.sql.Connection;
 
 /**
  * config bean

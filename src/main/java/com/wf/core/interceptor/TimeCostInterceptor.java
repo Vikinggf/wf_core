@@ -51,6 +51,8 @@ public class TimeCostInterceptor implements HandlerInterceptor {
             sb.append("请求地址:").append(request.getRequestURI()).append("\n");
             sb.append("traceId:").append(request.getAttribute("traceId")).append("\n");
             sb.append("用户IP :").append(IPUtils.getRemoteAddress(request)).append("\n");
+            sb.append("头信息App-Channel :").append(request.getHeader("App-Channel")).append("\n");
+            sb.append("头信息App-Version :").append(request.getHeader("App-Version")).append("\n");
             if (executeTime > 100) {
                 logger.warn(sb.toString());
             } else {

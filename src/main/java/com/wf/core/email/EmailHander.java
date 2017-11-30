@@ -5,8 +5,6 @@
 
 package com.wf.core.email;
 
-import org.springframework.scheduling.annotation.Async;
-
 import javax.mail.MessagingException;
 import java.util.List;
 
