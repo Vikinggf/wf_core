@@ -45,7 +45,7 @@ public class TraceIdUtils {
             return traceId;
         }
 
-        traceId = UUID.randomUUID().toString();
+        traceId = UUID.randomUUID().toString().replaceAll("-", "");
         TRACE_ID_THREAD_LOCAL.set(traceId);
         return traceId;
     }
@@ -53,7 +53,7 @@ public class TraceIdUtils {
     private static String getTraceIdFromRequest(HttpServletRequest request) {
         Object obj = request.getAttribute(TRACE_ID);
         if (obj == null) {
-            String traceId = UUID.randomUUID().toString();
+            String traceId = UUID.randomUUID().toString().replaceAll("-", "");
             request.setAttribute(TRACE_ID, traceId);
             return traceId;
         }
