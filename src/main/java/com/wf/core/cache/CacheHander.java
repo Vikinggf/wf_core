@@ -190,6 +190,13 @@ public interface CacheHander {
     public Long lpush(String key, Integer expireTime, Object...objects);
 
     /**
+     * 移除并返回列表 key 的尾元素。
+     * @param key
+     * @return
+     */
+    public <T> T rpop(String key);
+
+    /**
      * 将数据放入list中
      * @param key
      * @param str
