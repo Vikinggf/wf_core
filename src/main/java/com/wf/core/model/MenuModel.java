@@ -5,7 +5,7 @@ package com.wf.core.model;
  * @date 2016-10-25
  */
 public class MenuModel {
-    private Integer id;
+    private String id;
     private Integer lotteryId;
     private String text;
     private String code;
@@ -14,11 +14,11 @@ public class MenuModel {
     private Boolean expanded=true;
     private String moduleLink;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
