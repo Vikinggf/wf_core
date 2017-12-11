@@ -1,4 +1,4 @@
-package com.wf.core.model;
+package com.wf.core.extjs.model;
 
 /**
  * @author pdl
