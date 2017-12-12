@@ -17,6 +17,7 @@ public class TreeModel {
     private boolean checked;
     private String moduleLink;
     private Integer sort;
+    private String parameters;
 
     public Long getId() {
         return id;
@@ -96,5 +97,13 @@ public class TreeModel {
 
     public void setSort(Integer sort) {
         this.sort = sort;
+    }
+
+    public String getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 }
