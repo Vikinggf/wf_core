@@ -13,6 +13,7 @@ public class MenuModel {
     private Boolean leaf;
     private Boolean expanded=true;
     private String moduleLink;
+    private String parameters;
 
     public String getId() {
         return id;
@@ -76,5 +77,13 @@ public class MenuModel {
 
     public void setModuleLink(String moduleLink) {
         this.moduleLink = moduleLink;
+    }
+
+    public String getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+        this.parameters = parameters;
     }
 }
