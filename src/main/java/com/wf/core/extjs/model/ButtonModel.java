@@ -5,7 +5,7 @@ package com.wf.core.extjs.model;
  */
 public class ButtonModel {
 	private Long id;
-	private Long menuId;
+	private String menuCode;
 	private String link;
 	private Integer sort;
 	private Boolean disabled;
@@ -18,12 +18,12 @@ public class ButtonModel {
 		this.id = id;
 	}
 
-	public Long getMenuId() {
-		return menuId;
+	public String getMenuCode() {
+		return menuCode;
 	}
 
-	public void setMenuId(Long menuId) {
-		this.menuId = menuId;
+	public void setMenuCode(String menuCode) {
+		this.menuCode = menuCode;
 	}
 
 	public String getLink() {
