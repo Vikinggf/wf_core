@@ -1,6 +1,8 @@
 package com.wf.core.utils.http;
 
+import com.wf.core.utils.TraceIdUtils;
 import com.wf.core.utils.exception.BusinessCommonException;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 
 import java.io.BufferedReader;
@@ -89,10 +91,12 @@ public class HttpClientUtils {
                 }
             }
             if (code != null) {
-                logger.error("请求网络错误, " + code + "：" + url, e);
+                logger.error("请求网络错误 traceId={} responseCode={} url={} ex={}",
+                        TraceIdUtils.getTraceId(), code, url, ExceptionUtils.getStackTrace(e));
                 throw new BusinessCommonException("请求网络错误, " + code + "：" + url, e);
             } else {
-                logger.error("请求网络错误：" + url, e);
+                logger.error("请求网络错误 traceId={} url={} ex={}",
+                        TraceIdUtils.getTraceId(), url, ExceptionUtils.getStackTrace(e));
                 throw new BusinessCommonException("请求网络错误：" + url, e);
             }
         } finally {
