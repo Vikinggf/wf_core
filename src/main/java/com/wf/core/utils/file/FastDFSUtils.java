@@ -1,11 +1,13 @@
 package com.wf.core.utils.file;
 
+import com.wf.core.log.LogExceptionStackTrace;
 import com.wf.core.utils.Global;
-import com.wf.core.utils.exception.CdnException;
+import com.wf.core.utils.TraceIdUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -22,7 +24,7 @@ import java.net.URL;
  * @date 2017年5月15日
  */
 public class FastDFSUtils {
-    private static Logger logger = Logger.getLogger(FastDFSUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(FastDFSUtils.class);
     private static StorageClient1 storageClient;
     private static String domainCdnUri;
     private static String saveDomainCdnUri;
@@ -50,15 +52,14 @@ public class FastDFSUtils {
             }
             return fileId;
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("上传失败", e);
-            throw new CdnException("上传失败", e);
+            logger.error("上传失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            return null;
         } finally {
             if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException e) {
-                    logger.error(e);
+                    logger.error("关闭流异常:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
                 }
             }
         }
@@ -75,8 +76,8 @@ public class FastDFSUtils {
             }
             return fileId;
         } catch (Exception e) {
-            logger.error("上传失败", e);
-            throw new CdnException("上传失败", e);
+            logger.error("上传失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            return null;
         }
     }
 
@@ -128,12 +129,14 @@ public class FastDFSUtils {
             in = new URL(url).openStream();
             return uploadImage(in);
         } catch (IOException e) {
-            throw new CdnException("图片转换失败", e);
+            logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            return null;
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
+                    logger.error("关闭流异常:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
                 }
             }
         }
@@ -150,20 +153,22 @@ public class FastDFSUtils {
         }
         InputStream in = null;
         try {
-        	in = file.getInputStream();
+            in = file.getInputStream();
             return uploadImage(in);
         } catch (IOException e) {
-            throw new CdnException("图片转换失败", e);
+            logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            return null;
         } finally {
             if (in != null) {
                 try {
                     in.close();
                 } catch (IOException e) {
+                    logger.error("关闭流异常:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
                 }
             }
         }
     }
-    
+
     /**
      * 上传图片
      *
@@ -196,10 +201,11 @@ public class FastDFSUtils {
             logger.info("saved image:" + imagePath);
             return imagePath;
         } catch (IOException | MyException e) {
-            throw new CdnException("图片转换失败", e);
+            logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            return null;
         }
     }
-    
+
     /**
      * 获取文件后缀名（不带点）.
      *
@@ -217,7 +223,7 @@ public class FastDFSUtils {
         if (storageClient == null) {
             String[] szTrackerServers = Global.getConfig("fastdfs.tracker_server").split(";");
             if (szTrackerServers.length == 0) {
-                throw new RuntimeException("未找到tracker_server的配置");
+                logger.error("未找到tracker_server的配置 :traceId={}", TraceIdUtils.getTraceId());
             }
             InetSocketAddress[] tracker_servers = new InetSocketAddress[szTrackerServers.length];
             ClientGlobal.setG_secret_key(Global.getConfig("fastdfs.http.secret_key"));
@@ -228,7 +234,7 @@ public class FastDFSUtils {
             for (int i = 0; i < szTrackerServers.length; i++) {
                 String[] parts = szTrackerServers[i].split("\\:", 2);
                 if (parts.length != 2) {
-                    throw new RuntimeException("配置错误： host:port");
+                    logger.error("配置错误=host:port :traceId={}", TraceIdUtils.getTraceId());
                 }
                 tracker_servers[i] = new InetSocketAddress(parts[0].trim(), Integer.parseInt(parts[1].trim()));
             }
@@ -239,10 +245,10 @@ public class FastDFSUtils {
             try {
                 trackerServer = trackerClient.getConnection();
                 storageServer = trackerClient.getStoreStorage(trackerServer);
+                storageClient = new StorageClient1(trackerServer, storageServer);
             } catch (IOException e) {
-                throw new RuntimeException("无法连接服务器", e);
+                logger.error("无法连接服务器:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
             }
-            storageClient = new StorageClient1(trackerServer, storageServer);
         }
         return storageClient;
     }
