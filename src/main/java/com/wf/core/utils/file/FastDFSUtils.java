@@ -3,7 +3,6 @@ package com.wf.core.utils.file;
 import com.wf.core.log.LogExceptionStackTrace;
 import com.wf.core.utils.Global;
 import com.wf.core.utils.TraceIdUtils;
-import com.wf.core.utils.exception.CdnException;
 import org.apache.commons.lang3.StringUtils;
 import org.csource.common.MyException;
 import org.csource.fastdfs.*;
@@ -154,7 +153,7 @@ public class FastDFSUtils {
         }
         InputStream in = null;
         try {
-        	in = file.getInputStream();
+            in = file.getInputStream();
             return uploadImage(in);
         } catch (IOException e) {
             logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
@@ -169,7 +168,7 @@ public class FastDFSUtils {
             }
         }
     }
-    
+
     /**
      * 上传图片
      *
@@ -206,7 +205,7 @@ public class FastDFSUtils {
             return null;
         }
     }
-    
+
     /**
      * 获取文件后缀名（不带点）.
      *
