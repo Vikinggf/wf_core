@@ -49,6 +49,13 @@ public interface CacheHander {
     public <T> T cache(String key, CacheData data, Integer expireTime);
 
     /**
+     * 检查给定的key是否存在
+     * @param key 缓存的key
+     * @return
+     */
+    public Boolean exists(String key);
+
+    /**
      * 获取一个string值
      * @param key
      * @return
