@@ -134,6 +134,15 @@ public interface CacheHander {
     public long incr(String key, Integer expireTime);
 
     /**
+     * 原子性增量实现-float
+     * @param key
+     * @param value
+     * @param expireTime
+     * @return
+     */
+    public double incrByFloat(String key,double value,Integer expireTime);
+
+    /**
      * 获取集合的size
      * @param key
      * @return
