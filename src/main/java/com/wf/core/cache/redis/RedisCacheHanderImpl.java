@@ -125,6 +125,14 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Boolean exists(String key) {
+        Jedis jedis = jedisPool.getResource();
+        boolean exists = jedis.exists(key);
+        jedis.close();
+        return exists;
+    }
+
+    @Override
     public Boolean set(String key, Object value) {
         return this.set(key, value, defaultCacheTime);
     }
