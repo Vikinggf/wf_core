@@ -125,6 +125,14 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Boolean exists(String key) {
+        Jedis jedis = jedisPool.getResource();
+        boolean exists = jedis.exists(key);
+        jedis.close();
+        return exists;
+    }
+
+    @Override
     public Boolean set(String key, Object value) {
         return this.set(key, value, defaultCacheTime);
     }
@@ -244,6 +252,16 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             jedis.expire(key, expireTime.intValue());
         jedis.close();
         return count;
+    }
+
+    @Override
+    public double incrByFloat(String key,double value,Integer expireTime){
+        Jedis jedis = jedisPool.getResource();
+        double count = jedis.incrByFloat(serializeKey(key),value);
+        int time = expireTime==null?defaultCacheTime:expireTime;
+        jedis.expire(key,time);
+        jedis.close();
+        return  count;
     }
 
     @Override
