@@ -46,7 +46,7 @@ public class MVCExceptionHandle {
             }
             sb.delete(sb.length() - 1, sb.length());
             String s = sb.toString();
-            logger.error("参数非法 param={} ex={} traceId:{}", s, ExceptionUtils.getStackTrace(e), traceId);
+            logger.warn("参数非法 param={} ex={} traceId:{}", s, ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(400, s);
         } else if (e instanceof BaseController.LbmOAuthException) {
             logger.error("用户没有登录: ex={}, traceId:{}", ExceptionUtils.getStackTrace(e), traceId);
