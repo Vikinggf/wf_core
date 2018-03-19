@@ -20,15 +20,14 @@ public class SignUtils {
      * 时间是否超时
      */
     public static boolean checkTimeStamp(String timestamp) {
-        Long diffTimeStamp = Long.parseLong(DateUtils.formatCurrentDate(DateUtils.YYYYMMDDHHMMSS_PATTERN)) - Long.parseLong(timestamp);
-        logger.debug("本地时间：{}", Long.parseLong(DateUtils.formatCurrentDate(DateUtils.YYYYMMDDHHMMSS_PATTERN)));
-        logger.debug("request时间：{}", Long.parseLong(timestamp));
-        logger.debug("时间差：{}", Math.abs(diffTimeStamp));
+        Date d = DateUtils.parseDate(timestamp,DateUtils.YYYYMMDDHHMMSS_PATTERN);
+        long d2 = System.currentTimeMillis();
+        long diffTimeStamp =  d2 - d.getTime();
         if (timestamp == null) {
             return false;
         } else if (timestamp.length() != 14) {
             return false;
-        } else if (Math.abs(diffTimeStamp) > 20000) {
+        } else if (diffTimeStamp > 1000 * 60 * 10) {
             return false;
         }
         return true;
