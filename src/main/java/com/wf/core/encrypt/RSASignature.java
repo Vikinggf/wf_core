@@ -1,5 +1,10 @@
 package com.wf.core.encrypt;
 
+import com.wf.core.utils.SignUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -18,6 +23,7 @@ public class RSASignature {
      * 签名算法
      */
     public static final String SIGN_ALGORITHMS = "SHA1WithRSA";
+    private static Logger logger = LoggerFactory.getLogger(RSASignature.class);
 
     /**
      * RSA签名
@@ -38,7 +44,7 @@ public class RSASignature {
             byte[] signed = signature.sign();
             return Base64.getEncoder().encodeToString(signed);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("sign生成签名失败:" + ExceptionUtils.getStackTrace(e) );
         }
         return null;
     }
@@ -54,7 +60,7 @@ public class RSASignature {
             byte[] signed = signature.sign();
             return Base64.getEncoder().encodeToString(signed);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("sign生成签名失败:" + ExceptionUtils.getStackTrace(e) );
         }
         return null;
     }
@@ -79,7 +85,7 @@ public class RSASignature {
             boolean bverify = signature.verify(Base64.getDecoder().decode(sign));
             return bverify;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("doCheck生成签名失败:" + ExceptionUtils.getStackTrace(e) );
         }
         return false;
     }
@@ -95,7 +101,7 @@ public class RSASignature {
             boolean bverify = signature.verify(Base64.getDecoder().decode(sign));
             return bverify;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("doCheck生成签名失败:" + ExceptionUtils.getStackTrace(e) );
         }
         return false;
     }
