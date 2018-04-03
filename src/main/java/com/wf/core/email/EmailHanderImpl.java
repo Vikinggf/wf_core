@@ -71,6 +71,24 @@ public class EmailHanderImpl implements InitializingBean, EmailHander {
             logger.error("{}-{}-{}", "EmailHander", "sendHtml", ExceptionUtils.getStackTrace(e));
         }
     }
+    @Override
+    public void sendHtml(String to, String subject, String html,String personalName) throws MessagingException {
+        try {
+            Assert.notNull(username, "缺少邮件配置项email.username");
+            Assert.notNull(this.password, "缺少邮件配置项email.password");
+            Assert.notNull(this.host, "缺少邮件配置项email.host");
+            MimeMessage mailMessage = this.mailSender.createMimeMessage();
+            MimeMessageHelper messageHelper = new MimeMessageHelper(mailMessage);
+            messageHelper.setTo(to);
+            messageHelper.setFrom(this.username,personalName);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(html, true);
+            this.mailSender.send(mailMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("{}-{}-{}", "EmailHanderUtil", "sendHtml-person", ExceptionUtils.getStackTrace(e));
+        }
+    }
 
     @Override
     public void sendHtml(String to, String subject, String html, List<AttachMent> attachMents) throws MessagingException {
