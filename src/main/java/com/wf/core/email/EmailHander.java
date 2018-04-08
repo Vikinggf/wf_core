@@ -29,6 +29,17 @@ public interface EmailHander {
     void sendHtml(String to, String subject, String html) throws MessagingException;
 
     /**
+     * 发送html格式邮件
+     *
+     * @param to      接收人
+     * @param subject 主题
+     * @param html    内容
+     * @param personalName 发送人别名
+     * @throws MessagingException
+     */
+    void sendHtml(String to, String subject, String html,String personalName) throws MessagingException;
+
+    /**
      * 发送html格式邮件，带附件
      *
      * @param to      接收人
