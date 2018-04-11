@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.URL;
 
@@ -25,6 +26,7 @@ import java.net.URL;
  */
 public class FastDFSUtils {
     private static final Logger logger = LoggerFactory.getLogger(FastDFSUtils.class);
+    private static final String FILE_SEPARATOR = "/";
     private static StorageClient1 storageClient;
     private static String domainCdnUri;
     private static String saveDomainCdnUri;
@@ -47,8 +49,8 @@ public class FastDFSUtils {
                 fis.read(file_buff);
             }
             String fileId = getStorageClient().upload_file1(file_buff, getFileExt(file.getName()), null);
-            if (!fileId.startsWith("/")) {
-                fileId = "/" + fileId;
+            if (!fileId.startsWith(FILE_SEPARATOR)) {
+                fileId = FILE_SEPARATOR + fileId;
             }
             return fileId;
         } catch (Exception e) {
@@ -71,8 +73,8 @@ public class FastDFSUtils {
         }
         try {
             String fileId = getStorageClient().upload_file1(file.getBytes(), getFileExt(file.getOriginalFilename()), null);
-            if (!fileId.startsWith("/")) {
-                fileId = "/" + fileId;
+            if (!fileId.startsWith(FILE_SEPARATOR)) {
+                fileId = FILE_SEPARATOR + fileId;
             }
             return fileId;
         } catch (Exception e) {
@@ -82,8 +84,8 @@ public class FastDFSUtils {
     }
 
     public static String getDomainUri(String relativePath) {
-        if (relativePath == null || "".equals(relativePath)) {
-            return "";
+        if (StringUtils.isBlank(relativePath)) {
+            return StringUtils.EMPTY;
         }
         return getDomainUri() + relativePath;
     }
@@ -122,12 +124,19 @@ public class FastDFSUtils {
             return null;
         }
         InputStream in = null;
+        HttpURLConnection connection = null;
         try {
             if (url.startsWith("https:")) {
                 url = url.replaceFirst("https:", "http:");
             }
-            in = new URL(url).openStream();
-            return uploadImage(in);
+            logger.info("圆角图片转换 traceId={} url={}",TraceIdUtils.getTraceId(),url);
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(30000);
+            in = connection.getInputStream();
+            String path = uploadImage(in);
+            logger.info("圆角图片转换结束 traceId={} path={}", TraceIdUtils.getTraceId(), path);
+            return path;
         } catch (IOException e) {
             logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
             return null;
@@ -138,6 +147,9 @@ public class FastDFSUtils {
                 } catch (IOException e) {
                     logger.error("关闭流异常:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
                 }
+            }
+            if (connection != null) {
+                connection.disconnect();
             }
         }
     }
@@ -178,10 +190,8 @@ public class FastDFSUtils {
     public static String uploadImage(InputStream in) {
         try {
             BufferedImage image = ImageIO.read(in);
-            int w = image.getWidth();
-            int h = image.getHeight();
-            w = 150;
-            h = 150;
+            int w = 150;
+            int h = 150;
             BufferedImage output = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = output.createGraphics();
             output = g2.getDeviceConfiguration().createCompatibleImage(w, h, Transparency.TRANSLUCENT);
@@ -195,13 +205,13 @@ public class FastDFSUtils {
             ByteArrayOutputStream pngOut = new ByteArrayOutputStream();
             ImageIO.write(output, "PNG", pngOut);
             String imagePath = getStorageClient().upload_file1(pngOut.toByteArray(), "png", null);
-            if (!imagePath.startsWith("/")) {
-                imagePath = "/" + imagePath;
+            if (!imagePath.startsWith(FILE_SEPARATOR)) {
+                imagePath = FILE_SEPARATOR + imagePath;
             }
-            logger.info("saved image:" + imagePath);
+            logger.info("上传图片结束 traceId={} path={}", TraceIdUtils.getTraceId(), imagePath);
             return imagePath;
         } catch (IOException | MyException e) {
-            logger.error("图片转换失败:traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
+            logger.error("图片转换失败 traceId={}, ex={}", TraceIdUtils.getTraceId(), LogExceptionStackTrace.erroStackTrace(e));
             return null;
         }
     }
@@ -213,7 +223,7 @@ public class FastDFSUtils {
      */
     public static String getFileExt(String fileName) {
         if (StringUtils.isBlank(fileName) || !fileName.contains(".")) {
-            return "";
+            return StringUtils.EMPTY;
         } else {
             return fileName.substring(fileName.lastIndexOf(".") + 1); // 不带最后的点
         }
@@ -252,78 +262,4 @@ public class FastDFSUtils {
         }
         return storageClient;
     }
-
-    // /**
-    // * 根据组名和远程文件名来删除一个文件
-    // * @param groupName
-    // * @param fileName
-    // * @return 0为成功，非0为失败，具体为错误代码
-    // */
-    // public static int deleteFile(String groupName, String fileName) {
-    // try {
-    // int result = getStorageClient().delete_file(groupName == null ? "group1" : groupName, fileName);
-    // return result;
-    // } catch (Exception ex) {
-    // logger.error(ex);
-    // return 0;
-    // }
-    // }
-    //
-    // /**
-    // * 根据fileId来删除一个文件（我们现在用的就是这样的方式，上传文件时直接将fileId保存在了数据库中）
-    // * @param fileId
-    // * @return 0为成功，非0为失败，具体为错误代码
-    // */
-    // public static int deleteFile(String fileId) {
-    // try {
-    // int result = getStorageClient().delete_file1(fileId);
-    // return result;
-    // } catch (Exception ex) {
-    // logger.error(ex);
-    // return 0;
-    // }
-    // }
-    //
-    // /**
-    // * 修改一个已经存在的文件
-    // * @param oldFileId
-    // * @param file 新文件
-    // * @param filePath 新文件路径
-    // * @return 返回空则为失败
-    // */
-    // public static String modifyFile(String oldFileId, File file, String filePath) {
-    // String fileId = null;
-    // try {
-    // // 先上传
-    // fileId = uploadFile(file, filePath);
-    // if (fileId == null) {
-    // return null;
-    // }
-    // // 再删除
-    // int delResult = deleteFile(oldFileId);
-    // if (delResult != 0) {
-    // return null;
-    // }
-    // } catch (Exception ex) {
-    // logger.error(ex);
-    // return null;
-    // }
-    // return fileId;
-    // }
-    //
-    // /**
-    // * 文件下载
-    // * @param fileId
-    // * @return 返回一个流
-    // */
-    // public static InputStream downloadFile(String fileId) {
-    // try {
-    // byte[] bytes = getStorageClient().download_file1(fileId);
-    // InputStream inputStream = new ByteArrayInputStream(bytes);
-    // return inputStream;
-    // } catch (Exception ex) {
-    // logger.error(ex);
-    // return null;
-    // }
-    // }
 }
