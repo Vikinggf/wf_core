@@ -90,6 +90,16 @@ public class FastDFSUtils {
         return getDomainUri() + relativePath;
     }
 
+    public static String getCheckDomainUri(String relativePath) {
+        if (StringUtils.isBlank(relativePath)) {
+            return StringUtils.EMPTY;
+        }
+        if (relativePath.startsWith("http")) {
+            return relativePath;
+        }
+        return getDomainUri() + relativePath;
+    }
+
     /**
      * 获取图片保存时使用的域名地址(WAP站)
      *
