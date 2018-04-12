@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -342,5 +343,15 @@ public interface CacheHander {
      */
     <T> T rlock(String key, LockTask<T> task);
 
+
+    String hmset(String key, Map<String, String> hash, Integer expireTime );
+
+    List<String> hmget(String key, String... fields);
+
+    Long hincrBy(String key, String field, long value, Integer expireTime);
+
+    Set<String> hkeys(String key);
+
+    Map<String, String> hgetAll(String key);
 
 }
