@@ -25,6 +25,12 @@ public abstract class DataEntity extends BaseEntity {
         super(id);
     }
 
+
+    @Override
+    public String getRedisField() {
+        return null;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }

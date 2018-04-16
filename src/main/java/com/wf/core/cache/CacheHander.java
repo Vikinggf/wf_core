@@ -344,14 +344,14 @@ public interface CacheHander {
     <T> T rlock(String key, LockTask<T> task);
 
 
-    String hmset(String key, Map<String, String> hash, Integer expireTime );
+    <T> String hmset(String key, Map<String, T> hash, Integer expireTime );
 
-    List<String> hmget(String key, String... fields);
+    <T> List<T> hmget(String key, String... fields);
 
     Long hincrBy(String key, String field, long value, Integer expireTime);
 
     Set<String> hkeys(String key);
 
-    Map<String, String> hgetAll(String key);
+    <T> Map<String, T> hgetAll(String key);
 
 }

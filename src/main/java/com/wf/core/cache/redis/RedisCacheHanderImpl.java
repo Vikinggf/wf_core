@@ -523,23 +523,62 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public String hmset(String key, Map<String, String> hash, Integer expireTime) {
-        Jedis jedis = jedisPool.getResource();
-        jedis.hmset(key,hash);
-
-        if (expireTime!=null && expireTime>0){
-            jedis.expire(key,expireTime);
+    public <T> String hmset(String key, Map<String, T> hash, Integer expireTime) {
+        if (hash==null||hash.isEmpty()){
+            return Y;
         }
-        jedis.close();
-        return null;
+        Jedis jedis = jedisPool.getResource();
+        String result = Y;
+
+        try {
+            byte[] keys = serializeKey(key);
+            Map<byte[],byte[]> maps = new HashMap<>(hash.size());
+            Iterator<Map.Entry<String, T>> it = hash.entrySet().iterator();
+
+            while (it.hasNext()){
+                Map.Entry<String, T> entry = it.next();
+                maps.put(serializeKey(entry.getKey()),serialize(entry.getValue()));
+            }
+            result = jedis.hmset(keys,maps);
+
+            if (expireTime!=null && expireTime>0){
+                jedis.expire(key,expireTime);
+            }
+        }finally {
+            jedis.close();
+        }
+        return result;
     }
 
     @Override
-    public List<String> hmget(String key, String... fields) {
+    public <T> List<T> hmget(String key, String... fields) {
+        if (fields==null || fields.length<=0){
+            return null;
+        }
+        List<T> resultData = null;
         Jedis jedis = jedisPool.getResource();
-        List<String> result = jedis.hmget(key,fields);
-        jedis.close();
-        return result;
+
+        try {
+            byte[] keys = serializeKey(key);
+            byte[][] fieldBytes = new byte[fields.length][];
+
+            for (int i = 0; i <fields.length; i++) {
+                String field = fields[i];
+                fieldBytes[i]=serializeKey(field);
+            }
+            List<byte[]> result = jedis.hmget(keys,fieldBytes);
+
+            if (result != null && !result.isEmpty()){
+                resultData = new ArrayList<>(result.size());
+
+                for (byte[] data :result ) {
+                    resultData.add((T)deserialize(data));
+                }
+            }
+        }finally {
+            jedis.close();
+        }
+        return resultData;
     }
 
     @Override
@@ -557,16 +596,36 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     @Override
     public Set<String> hkeys(String key) {
         Jedis jedis = jedisPool.getResource();
-        Set<String> set = jedis.hkeys(key);
-        jedis.close();
+        Set<String> set =null;
+        try {
+           set = jedis.hkeys(key);
+        }finally {
+            jedis.close();
+        }
         return set;
     }
 
     @Override
-    public Map<String, String> hgetAll(String key) {
+    public <T> Map<String, T> hgetAll(String key) {
         Jedis jedis = jedisPool.getResource();
-        Map<String, String> map =jedis.hgetAll(key);
-        jedis.close();
-        return map;
+        Map<String, T> result = null;
+        try {
+            byte[] keys = serializeKey(key);
+            Map<byte[], byte[]> map =jedis.hgetAll(keys);
+            if (map != null && !map.isEmpty()){
+                result = new HashMap<>(map.size());
+                Iterator<Map.Entry<byte[], byte[]>> entrys = map.entrySet().iterator();
+
+                while (entrys.hasNext()){
+                    Map.Entry<byte[], byte[]> entry = entrys.next();
+                    String mapKey = new String(entry.getKey());
+                    T t = (T)deserialize(entry.getValue());
+                    result.put(mapKey,t);
+                }
+            }
+        }finally {
+            jedis.close();
+        }
+        return result;
     }
 }

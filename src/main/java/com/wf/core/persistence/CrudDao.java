@@ -62,4 +62,11 @@ public interface CrudDao<T> extends BaseDao {
      * @see public int delete(T entity)
      */
     int delete(Long id);
+
+    /**
+     * 根据用户Id取得用户信息
+     * @param userId
+     * @return
+     */
+    List<T> findListByUserId(Long userId);
 }
