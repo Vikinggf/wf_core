@@ -48,7 +48,7 @@ public class IPUtils {
     public static String getRemoteAddress(HttpServletRequest request) {
         String ip = request.getHeader("Cdn-Src-Ip");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("x-forwarded-for");
+            ip = request.getHeader("X-Forwarded-For");
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Real-IP");
