@@ -289,6 +289,14 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Set<String> smembers(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Set<String> result = jedis.smembers(key);
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public Boolean expire(String key, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         boolean result = jedis.expire(key, expireTime) == 1;
