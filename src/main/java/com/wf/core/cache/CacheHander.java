@@ -173,6 +173,13 @@ public interface CacheHander {
     public Boolean sadd(String key, String value);
 
     /**
+     * 取集合中所有值
+     * @param key
+     * @return
+     */
+    public Set<String> smembers(String key);
+
+    /**
      * 设置超时
      * @param key
      * @param expireTime
