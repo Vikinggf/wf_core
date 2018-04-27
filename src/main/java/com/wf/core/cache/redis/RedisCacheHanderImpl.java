@@ -580,7 +580,11 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
                 resultData = new ArrayList<>(result.size());
 
                 for (byte[] data :result ) {
-                    resultData.add((T)deserialize(data));
+                    T t = (T)deserialize(data);
+
+                    if (t!=null){
+                        resultData.add(t);
+                    }
                 }
             }
         }finally {
