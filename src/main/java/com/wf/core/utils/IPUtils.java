@@ -1,6 +1,8 @@
 package com.wf.core.utils;
 
 import org.apache.shiro.UnavailableSecurityManagerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -13,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
  * @author Fe 2016年9月27日
  */
 public class IPUtils {
+    private static final Logger logger = LoggerFactory.getLogger(IPUtils.class);
 
+    private IPUtils(){}
     /**
      * 获取HTTPServletRequest对象
      * @return
@@ -46,21 +50,28 @@ public class IPUtils {
      * @return
      */
     public static String getRemoteAddress(HttpServletRequest request) {
+        String traceId = TraceIdUtils.getTraceId();
         String ip = request.getHeader("Cdn-Src-Ip");
+        logger.info("Cdn-Src-Ip = {} traceId={}",ip,traceId);
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-            ip = request.getHeader("x-forwarded-for");
+            ip = request.getHeader("X-Forwarded-For");
+            logger.info("X-Forwarded-For = {} traceId={}",ip,traceId);
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("X-Real-IP");
+            logger.info("X-Real-IP = {} traceId={}",ip,traceId);
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("Proxy-Client-IP");
+            logger.info("Proxy-Client-IP = {} traceId={}",ip,traceId);
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getHeader("WL-Proxy-Client-IP");
+            logger.info("WL-Proxy-Client-IP = {} traceId={}",ip,traceId);
         }
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
+            logger.info("getRemoteAddr = {} traceId={}",ip,traceId);
         }
         String[] ips = ip.split(",");
         String trueIp = "";
