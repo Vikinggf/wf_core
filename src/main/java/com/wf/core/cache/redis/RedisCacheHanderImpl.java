@@ -8,10 +8,7 @@ import com.wf.core.cache.exception.CacheException;
 import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.InitializingBean;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Tuple;
+import redis.clients.jedis.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -289,6 +286,14 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Set<String> smembers(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Set<String> result = jedis.smembers(key);
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public Boolean expire(String key, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         boolean result = jedis.expire(key, expireTime) == 1;
@@ -515,5 +520,18 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             }
         }
         throw new CacheException("锁定任务执行异常", new RuntimeException());
+    }
+
+    @Override
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+        Jedis jedis = jedisPool.getResource();
+        jedis.subscribe(jedisPubSub, channel);
+    }
+
+    @Override
+    public void publish(String channel, String message) {
+        Jedis jedis = jedisPool.getResource();
+        jedis.publish(channel, message);
+        jedis.close();
     }
 }
