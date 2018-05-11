@@ -2,6 +2,7 @@ package com.wf.core.cache;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPubSub;
 
 import java.util.List;
 import java.util.Set;
@@ -349,5 +350,10 @@ public interface CacheHander {
      */
     <T> T rlock(String key, LockTask<T> task);
 
-
+    /**
+     * 订阅一个或多个频道，调用此方法后线程会阻塞
+     * @param jedisPubSub 订阅频道处理
+     * @param channel 频道
+     */
+    void subscribe(JedisPubSub jedisPubSub, String... channel);
 }
