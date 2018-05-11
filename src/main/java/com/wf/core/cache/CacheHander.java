@@ -356,4 +356,6 @@ public interface CacheHander {
      * @param channel 频道
      */
     void subscribe(JedisPubSub jedisPubSub, String... channel);
+
+    void publish(String channel, String message);
 }

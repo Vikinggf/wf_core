@@ -527,4 +527,11 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         Jedis jedis = jedisPool.getResource();
         jedis.subscribe(jedisPubSub, channel);
     }
+
+    @Override
+    public void publish(String channel, String message) {
+        Jedis jedis = jedisPool.getResource();
+        jedis.publish(channel, message);
+        jedis.close();
+    }
 }
