@@ -64,8 +64,8 @@ public class APIUtils {
         return UUID.randomUUID().toString().replace("-", "");
     }
 
-    public static String getCode(String prefix, String id) {
-        return prefix + DateUtils.formatCurrentDate(DateUtils.YYYYMMDD_PATTERN) + id;
+    public static String getCode(String prefix, Long id) {
+        return prefix.toUpperCase() + DateUtils.formatCurrentDate(DateUtils.YYYYMMDD_PATTERN) + (id < 10 ? "0" : "") + id;
     }
 
 }
