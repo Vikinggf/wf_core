@@ -8,10 +8,7 @@ import com.wf.core.cache.exception.CacheException;
 import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.InitializingBean;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Tuple;
+import redis.clients.jedis.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -623,21 +620,34 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         Map<String, T> result = null;
         try {
             byte[] keys = serializeKey(key);
-            Map<byte[], byte[]> map =jedis.hgetAll(keys);
-            if (map != null && !map.isEmpty()){
+            Map<byte[], byte[]> map = jedis.hgetAll(keys);
+            if (map != null && !map.isEmpty()) {
                 result = new HashMap<>(map.size());
                 Iterator<Map.Entry<byte[], byte[]>> entrys = map.entrySet().iterator();
 
-                while (entrys.hasNext()){
+                while (entrys.hasNext()) {
                     Map.Entry<byte[], byte[]> entry = entrys.next();
                     String mapKey = new String(entry.getKey());
-                    T t = (T)deserialize(entry.getValue());
-                    result.put(mapKey,t);
+                    T t = (T) deserialize(entry.getValue());
+                    result.put(mapKey, t);
                 }
             }
-        }finally {
+        } finally {
             jedis.close();
         }
         return result;
+    }
+
+    @Override
+    public void subscribe(JedisPubSub jedisPubSub, String... channel) {
+        Jedis jedis = jedisPool.getResource();
+        jedis.subscribe(jedisPubSub, channel);
+    }
+
+    @Override
+    public void publish(String channel, String message) {
+        Jedis jedis = jedisPool.getResource();
+        jedis.publish(channel, message);
+        jedis.close();
     }
 }
