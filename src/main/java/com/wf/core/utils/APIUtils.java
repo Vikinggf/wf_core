@@ -1,5 +1,7 @@
 package com.wf.core.utils;
 
+import com.wf.core.utils.type.DateUtils;
+
 import java.util.UUID;
 
 public class APIUtils {
@@ -60,6 +62,10 @@ public class APIUtils {
 
     public static String getUUID() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String getCode(String prefix, Long id) {
+        return prefix.toUpperCase() + DateUtils.formatCurrentDate(DateUtils.YYYYMMDD_PATTERN) + (id < 10 ? "0" : "") + id;
     }
 
 }
