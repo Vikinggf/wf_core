@@ -56,9 +56,7 @@ public class TraceIdUtils {
      * @param traceId 要设置的跟踪id
      */
     public static void setTraceId(String traceId) {
-        if (StringUtils.isBlank(traceId)) {
-            throw new IllegalArgumentException("traceId不可为空");
-        }
+        traceId = StringUtils.isBlank(traceId) ? TraceIdUtils.getTraceId() : traceId;
         HttpServletRequest request = getRequest();
         if (request != null) {
             request.setAttribute(TRACE_ID, traceId);
