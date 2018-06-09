@@ -8,6 +8,7 @@
     </bean>
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxIdle" value="${cache.maxIdle}"/>
+        <property name="maxTotal" value="${cache.maxTotal}"/>
         <property name="testOnBorrow" value="${cache.testOnBorrow}"/>
     </bean>
     <bean id="redisCacheHander" class="com.wf.core.cache.redis.RedisCacheHanderImpl">
