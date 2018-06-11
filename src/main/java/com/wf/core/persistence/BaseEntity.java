@@ -75,6 +75,9 @@ public abstract class BaseEntity implements Serializable {
         return ReflectionToStringBuilder.toString(this);
     }
 
+
+    public abstract   String getRedisField();
+
     /**
      * 删除标记（0：正常；1：删除；2：审核；）
      */

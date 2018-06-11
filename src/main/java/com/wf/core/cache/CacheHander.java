@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -356,6 +357,16 @@ public interface CacheHander {
      * @param channel 频道
      */
     void subscribe(JedisPubSub jedisPubSub, String... channel);
+
+    <T> String hmset(String key, Map<String, T> hash, Integer expireTime );
+
+    <T> List<T> hmget(String key, String... fields);
+
+    Long hincrBy(String key, String field, long value, Integer expireTime);
+
+    Set<String> hkeys(String key);
+
+    <T> Map<String, T> hgetAll(String key);
 
     /**
      * 给指定的频道发布一个消息
