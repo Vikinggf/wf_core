@@ -7,6 +7,7 @@ import com.wf.core.cache.RankingData;
 import com.wf.core.cache.exception.CacheException;
 import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
 
@@ -15,6 +16,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis缓存实现
@@ -649,5 +651,50 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         Jedis jedis = jedisPool.getResource();
         jedis.publish(channel, message);
         jedis.close();
+    }
+
+    @Override
+    public <T> T rlockPlus(String key, LockTask<T> task) {
+        return rlockPlus(key, defaultWaitTime, defaultLeaseTime, task);
+    }
+
+    /**
+     * @param key
+     * @param waitTime
+     * @param expireTime
+     * @param task
+     * @param <T>
+     * @return
+     * @author Tank
+     */
+    public <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task) {
+        if (waitTime == null) {
+            waitTime = defaultWaitTime;
+        }
+        if (expireTime == null) {
+            expireTime = defaultLeaseTime;
+        }
+        RLock lock = cacheRedissonClient.getLock(key);
+        try {
+            if (lock.tryLock(waitTime, expireTime, TimeUnit.SECONDS)) {
+                return task.work();
+            }
+        } catch (InterruptedException e) {
+            LOG.error("线程锁定异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+            throw new CacheException("线程锁定异常", e);
+        } catch (Throwable e) {
+            LOG.error("锁定任务执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+            throw new CacheException("锁定任务执行异常", e);
+        } finally {
+            try {
+                if (lock != null && lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
+            } catch (Exception e) {
+                LOG.error("释放锁异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+                throw new CacheException("释放锁异常", e);
+            }
+        }
+        throw new CacheException(key + " 获取锁时等待超时，等待上个任务执行完后再重试", new RuntimeException(key + " 获取锁时等待超时，等待上个任务执行完后再重试"));
     }
 }

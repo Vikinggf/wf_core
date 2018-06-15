@@ -374,4 +374,6 @@ public interface CacheHander {
      * @param message 消息
      */
     void publish(String channel, String message);
+
+    <T> T rlockPlus(String key, LockTask<T> task);
 }
