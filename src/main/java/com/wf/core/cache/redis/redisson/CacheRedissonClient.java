@@ -41,4 +41,8 @@ public class CacheRedissonClient implements InitializingBean {
         RLock lock = redisson.getLock(name);
         lock.unlock();
     }
+
+    public RLock getLock(String name){
+        return redisson.getLock(name);
+    }
 }
