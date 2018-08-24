@@ -447,6 +447,38 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public List<String> zrangeByScore(String key, double start, double end) {
+        Jedis jedis = jedisPool.getResource();
+        Set<byte[]> set = jedis.zrangeByScore(serializeKey(key), start, end);
+
+        jedis.close();
+
+        if (set == null) {
+            return null;
+        }
+        List<String> result = new ArrayList<>(set.size());
+        for (byte[] bytes : set) {
+            result.add((String) deserialize(bytes));
+        }
+
+        return result;
+    }
+
+    @Override
+    public long zremrangeByScore(String key, double start, double end) {
+        Jedis jedis = jedisPool.getResource();
+        Long num = jedis.zremrangeByScore(key, start, end);
+
+        jedis.close();
+
+        if (num == null) {
+            return 0;
+        }
+
+        return num;
+    }
+
+    @Override
     public long zrem(String key, String... members) {
         Jedis jedis = jedisPool.getResource();
         byte[][] bvalues = new byte[members.length][];

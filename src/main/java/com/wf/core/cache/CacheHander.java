@@ -299,6 +299,24 @@ public interface CacheHander {
     List<RankingData> zrevrangeWithScores(String key, long start, long end);
 
     /**
+     * 返回有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    List<String> zrangeByScore(String key, double start, double end);
+
+    /**
+     * 移除有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    long zremrangeByScore(String key, double start, double end);
+
+    /**
      * 清楚排行榜中的某用户积分
      * @param key
      * @param member
