@@ -699,6 +699,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
      * @return
      * @author Tank
      */
+    @Override
     public <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task) {
         if (waitTime == null) {
             waitTime = defaultWaitTime;

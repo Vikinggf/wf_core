@@ -393,5 +393,26 @@ public interface CacheHander {
      */
     void publish(String channel, String message);
 
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
     <T> T rlockPlus(String key, LockTask<T> task);
+
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param waitTime 等待时长
+     * @param expireTime 超时时长
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
+    <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
+
 }
