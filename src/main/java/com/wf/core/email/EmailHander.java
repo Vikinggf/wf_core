@@ -40,6 +40,14 @@ public interface EmailHander {
     void sendHtml(String to, String subject, String html,String personalName) throws MessagingException;
 
     /**
+     * 批量发送邮件
+     * @param emails
+     * @param isHtml
+     * @throws MessagingException
+     */
+    public void batchSendEmails(List<Email> emails,boolean isHtml) throws MessagingException;
+
+    /**
      * 发送html格式邮件，带附件
      *
      * @param to      接收人
