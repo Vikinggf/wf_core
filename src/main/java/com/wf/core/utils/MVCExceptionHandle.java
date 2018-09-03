@@ -47,7 +47,7 @@ public class MVCExceptionHandle {
             return new ErrorRspBean(400, "参数错误");
         } else if (e instanceof BaseController.LbmOAuthException) {
             logger.error("用户没有登录: ex={}, traceId={}", ExceptionUtils.getStackTrace(e), traceId);
-            return new ErrorRspBean(401, "登录信息已失效，请登录");
+            return new ErrorRspBean(401, "登录信息已失效，请重新登录");
         } else if (e instanceof BaseController.ChannelErrorException) {
             logger.error("渠道不存在或被禁用 ex={}, traceId={}", ExceptionUtils.getStackTrace(e), traceId);
             return new ErrorRspBean(402, "渠道不存在或被禁用");

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPubSub;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -298,6 +299,24 @@ public interface CacheHander {
     List<RankingData> zrevrangeWithScores(String key, long start, long end);
 
     /**
+     * 返回有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    List<String> zrangeByScore(String key, double start, double end);
+
+    /**
+     * 移除有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    long zremrangeByScore(String key, double start, double end);
+
+    /**
      * 清楚排行榜中的某用户积分
      * @param key
      * @param member
@@ -357,10 +376,43 @@ public interface CacheHander {
      */
     void subscribe(JedisPubSub jedisPubSub, String... channel);
 
+    <T> String hmset(String key, Map<String, T> hash, Integer expireTime );
+
+    <T> List<T> hmget(String key, String... fields);
+
+    Long hincrBy(String key, String field, long value, Integer expireTime);
+
+    Set<String> hkeys(String key);
+
+    <T> Map<String, T> hgetAll(String key);
+
     /**
      * 给指定的频道发布一个消息
      * @param channel 频道
      * @param message 消息
      */
     void publish(String channel, String message);
+
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
+    <T> T rlockPlus(String key, LockTask<T> task);
+
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param waitTime 等待时长
+     * @param expireTime 超时时长
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
+    <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
+
 }
