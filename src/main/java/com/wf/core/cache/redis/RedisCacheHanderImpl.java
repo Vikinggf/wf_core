@@ -625,10 +625,20 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Long hlen(String key) {
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            Long len = jedis.hlen(key);
+            return len;
+        } finally {
+            jedis.close();
+        }
+    }
+
+    @Override
     public Long hincrBy(String key, String field, long value, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         long result = jedis.hincrBy(key,field,value);
-
         if (expireTime!=null && expireTime >0){
             jedis.expire(key,expireTime);
         }
