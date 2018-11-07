@@ -174,6 +174,14 @@ public interface CacheHander {
     Boolean sadd(String key, String value);
 
     /**
+     * 从集合中移除一个或多个元素
+     * @param key
+     * @param value
+     * @return 被成功移除的元素的数量
+     */
+    long srem(String key, String... value);
+
+    /**
      * 取集合中所有值
      * @param key
      * @return

@@ -185,8 +185,12 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         if (key != null) {
             deleteCount += jedis.del(serializeKey(key));
         }
-        for (String k : keys) {
-            deleteCount += jedis.del(serializeKey(k));
+        if (keys != null && keys.length > 0) {
+            List<byte[]> bkeys = new ArrayList<>(keys.length);
+            for (String k : keys) {
+                bkeys.add(serializeKey(k));
+            }
+            deleteCount += jedis.del(bkeys.toArray(new byte[keys.length][]));
         }
         jedis.close();
         return deleteCount != 0;
@@ -290,6 +294,14 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         boolean result = jedis.sadd(key, value) == 1;
         jedis.close();
         return result;
+    }
+
+    @Override
+    public long srem(String key, String... value) {
+        Jedis jedis = jedisPool.getResource();
+        long count = jedis.srem(key, value);
+        jedis.close();
+        return count;
     }
 
     @Override
