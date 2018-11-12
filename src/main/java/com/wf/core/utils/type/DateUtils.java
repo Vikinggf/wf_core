@@ -449,6 +449,7 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         }
         long dayStart = DateUtils.getDayStartTime(new Date(current)).getTime();
         Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(current);
 
         long timeDis = current - dayStart;
         if (timeDis < 13 * 60 * 60 * 1000) {
