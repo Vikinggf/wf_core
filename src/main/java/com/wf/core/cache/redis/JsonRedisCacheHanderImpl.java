@@ -146,13 +146,13 @@ public class JsonRedisCacheHanderImpl implements JsonCacheHander, InitializingBe
         return deleteCount != 0;
     }
 
-    @Override
+    /*@Override
     public Set<String> keys(String key) {
         Jedis jedis = jedisPool.getResource();
         Set<String> set = jedis.keys(key + "*");
         jedis.close();
         return set;
-    }
+    }*/
 
     @Override
     public String lock(String key, LockTask<String> task, Integer expireTime) {
