@@ -91,8 +91,9 @@ public interface JsonCacheHander {
      * 返回库里面存在的key的集合，左模糊
      * @param key
      * @return
+     * 此方法会导致redis出现慢查询的问题，故删除
      */
-    public Set<String> keys(String key);
+    //public Set<String> keys(String key);
 
     /**
      * 原子性增量实现(+1)
