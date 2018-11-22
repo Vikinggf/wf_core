@@ -358,6 +358,22 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Long rpush(String key, Integer expireTime, Object... value) {
+        Jedis jedis = jedisPool.getResource();
+        byte[] bkey = serializeKey(key);
+        byte[][] bvalues = new byte[value.length][];
+        for (int i = 0; i < bvalues.length; i++) {
+            bvalues[i] = serialize(value[i]);
+        }
+        Long result = jedis.rpush(bkey, bvalues);
+        if (expireTime != null) {
+            jedis.expire(bkey, expireTime);
+        }
+        jedis.close();
+        return result;
+    }
+
+    @Override
     public <T> T rpop(String key) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);

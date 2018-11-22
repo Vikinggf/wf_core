@@ -223,6 +223,15 @@ public interface CacheHander {
     Long lpush(String key, Integer expireTime, Object...objects);
 
     /**
+     * 将数据放入队列末尾(最右边)
+     * @param key
+     * @param expireTime
+     * @param objects
+     * @return
+     */
+    Long rpush(String key, Integer expireTime, Object... objects);
+
+    /**
      * 移除并返回列表 key 的尾元素。
      * @param key
      * @return
