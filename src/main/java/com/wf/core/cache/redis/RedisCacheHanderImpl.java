@@ -728,6 +728,25 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
+    public Long hset(String key, String field, String value, Integer expireTime) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = 0L;
+        try {
+            result = jedis.hset(key, field, value);
+            if (expireTime != null) {
+                jedis.expire(key, expireTime);
+            }
+        } catch (Exception e) {
+            LOG.error("hset执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
     public void subscribe(JedisPubSub jedisPubSub, String... channel) {
         Jedis jedis = jedisPool.getResource();
         jedis.subscribe(jedisPubSub, channel);

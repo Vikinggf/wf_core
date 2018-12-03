@@ -458,6 +458,8 @@ public interface CacheHander {
 
     Map<String, String> hgetAllWithoutSerialize(String key);
 
+    Long hset(String key, String field, String value, Integer expire);
+
     /**
      * 给指定的频道发布一个消息
      *
