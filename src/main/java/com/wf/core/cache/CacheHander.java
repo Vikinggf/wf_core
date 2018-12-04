@@ -195,6 +195,15 @@ public interface CacheHander {
     Boolean sadd(String key, String value);
 
     /**
+     * 向集合Set中添加一个或多个值
+     * @param key
+     * @param expireTime
+     * @param value
+     * @return 被添加到集合中的新元素的数量，不包括被忽略的元素。
+     */
+    Long sadd(String key, Integer expireTime, String... value);
+
+    /**
      * 从集合中移除一个或多个元素
      *
      * @param key
