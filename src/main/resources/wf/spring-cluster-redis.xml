@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="cacheRedissonClient" class="com.wf.core.cache.redis.redisson.CacheRedissonClient">
+        <property name="host" value="${cache.host}" />
+        <property name="port" value="${cache.port}" />
+    </bean>
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="${cache.maxIdle}"/>
+        <property name="maxTotal" value="${cache.maxTotal}"/>
+        <property name="testOnBorrow" value="${cache.testOnBorrow}"/>
+    </bean>
+    <bean id="redisCacheHander" class="com.wf.core.cache.redis.RedisClusterCacheHanderImpl">
+        <property name="jedisPoolConfig" ref="jedisPoolConfig"/>
+        <property name="cacheRedissonClient" ref="cacheRedissonClient"/>
+        <property name="redisAddrs" value="${cache.cluster.addrs}" />
+    </bean>
+</beans>

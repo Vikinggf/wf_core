@@ -97,13 +97,6 @@ public interface CacheHander {
     Boolean delete(String key, String...keys);
 
     /**
-     * 返回库里面存在的key的集合，左模糊
-     * @param key
-     * @return
-     */
-    Set<String> keys(String key);
-
-    /**
      * 原子性增量实现(+1)
      * @param key
      * @return
