@@ -1,5 +1,10 @@
 package com.wf.core.utils.http;
 
+import com.alibaba.fastjson.JSONObject;
+import com.mashape.unirest.http.JsonNode;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
+import com.mashape.unirest.request.HttpRequestWithBody;
 import com.wf.core.utils.TraceIdUtils;
 import com.wf.core.utils.exception.BusinessCommonException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -19,6 +24,10 @@ import java.net.URL;
  */
 public class HttpClientUtils {
     public static final String CHARSET = "utf-8";
+
+    private static final int connectionTimeout = 30000;
+
+    private static final int readTimeout = 30000;
 
     /**
      * post
@@ -54,6 +63,7 @@ public class HttpClientUtils {
         return request(url, method, CHARSET, logger);
     }
 
+
     /**
      * 请求
      *
@@ -65,16 +75,26 @@ public class HttpClientUtils {
      */
     public static String request(String url, String method, String charset, Logger logger) {
         HttpURLConnection httpConnection = null;
-        InputStream data_In = null;
         try {
             logger.info("request: " + url);
             httpConnection = (HttpURLConnection) new URL(url).openConnection();
             httpConnection.setConnectTimeout(30000);
             httpConnection.setReadTimeout(30000);
             httpConnection.setRequestMethod(method);
+        } catch (IOException e) {
+            throw new BusinessCommonException("请求网络错误：" + url, e);
+        }
+        return requestIng(httpConnection, logger, url);
+    }
+
+
+    private static String requestIng(HttpURLConnection httpConnection, Logger logger, String url) {
+        InputStream data_In = null;
+        try {
+            logger.info("request: " + url);
             data_In = httpConnection.getInputStream();
             String strRead = null;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(data_In, charset));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(data_In, CHARSET));
             StringBuilder result = new StringBuilder();
             while ((strRead = reader.readLine()) != null) {
                 result.append(strRead).append('\n');
@@ -106,8 +126,31 @@ public class HttpClientUtils {
                 } catch (IOException e) {
                 }
             }
-            if (httpConnection != null)
+            if (httpConnection != null) {
                 httpConnection.disconnect();
+            }
         }
+    }
+
+
+    /**
+     * 新增一个方法可以提供超时时间的管理
+     *
+     * @param requestConfig
+     * @return
+     */
+    public static String request(RequestConfig requestConfig) {
+        HttpURLConnection httpConnection = null;
+        Logger logger = requestConfig.getLogger();
+        String url = requestConfig.getUrl();
+        try {
+            httpConnection = (HttpURLConnection) new URL(url).openConnection();
+            httpConnection.setConnectTimeout(requestConfig.getConnectionTimeout() < 0 ? connectionTimeout : requestConfig.getConnectionTimeout());
+            httpConnection.setReadTimeout(requestConfig.getReadTimeout() < 0 ? readTimeout : requestConfig.getReadTimeout());
+            httpConnection.setRequestMethod(requestConfig.getHttpMethod().name());
+        } catch (IOException e) {
+            throw new BusinessCommonException("请求网络错误：" + url, e);
+        }
+        return requestIng(httpConnection, logger, url);
     }
 }
