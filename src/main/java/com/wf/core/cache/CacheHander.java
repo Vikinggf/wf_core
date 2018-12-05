@@ -469,6 +469,8 @@ public interface CacheHander {
 
     Long hset(String key, String field, String value, Integer expire);
 
+    Long hset(String key, String field, Object value, Integer expire);
+
     /**
      * 给指定的频道发布一个消息
      *
