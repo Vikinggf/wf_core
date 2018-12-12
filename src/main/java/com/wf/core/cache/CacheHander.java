@@ -503,4 +503,6 @@ public interface CacheHander {
      */
     <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
 
+    String hmsetWithoutSerialize(String key, Map<String, String> hash, Integer expireTime);
+
 }
