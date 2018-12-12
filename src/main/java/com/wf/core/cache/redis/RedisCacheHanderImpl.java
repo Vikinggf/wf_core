@@ -835,4 +835,33 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         }
         throw new CacheException(key + " 获取锁时等待超时，等待上个任务执行完后再重试", new RuntimeException(key + " 获取锁时等待超时，等待上个任务执行完后再重试"));
     }
+
+    /**
+     * 该方法没有采用序列化。请要使用hmget获取值。
+     * 对应的获取方法hgetAllWithoutSerialize
+     * @param key
+     * @param hash
+     * @param expireTime
+     * @return
+     */
+    @Override
+    public String hmsetWithoutSerialize(String key, Map<String, String> hash, Integer expireTime) {
+        if(hash != null && !hash.isEmpty()) {
+            Jedis jedis = jedisPool.getResource();
+            String result = "Y";
+
+            try {
+                result = jedis.hmset(key, hash);
+                if(expireTime != null && expireTime.intValue() > 0) {
+                    jedis.expire(key, expireTime.intValue());
+                }
+            } finally {
+                jedis.close();
+            }
+
+            return result;
+        } else {
+            return "Y";
+        }
+    }
 }
