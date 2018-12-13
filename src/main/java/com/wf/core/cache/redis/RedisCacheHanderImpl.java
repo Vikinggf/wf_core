@@ -838,7 +838,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
 
     /**
      * 该方法没有采用序列化。请要使用hmget获取值。
-     * 对应的获取方法hgetAllWithoutSerialize
+     * 对应的获取方法hgetAllWithoutSerialize  hmgetWithoutSerialize
      * @param key
      * @param hash
      * @param expireTime
@@ -863,5 +863,21 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         } else {
             return "Y";
         }
+    }
+
+    @Override
+    public List<String> hmgetWithoutSerialize(String key,String... fields){
+        if (fields == null) {
+            return null;
+        }
+        List<String> resultData = null;
+        Jedis jedis = jedisPool.getResource();
+
+        try {
+            resultData = jedis.hmget(key, fields);
+        } finally {
+            jedis.close();
+        }
+        return resultData;
     }
 }
