@@ -54,7 +54,7 @@ public class FtpClientUtil {
     }
 
 
-    public void initFtpClient() {
+    private void initFtpClient() {
         ftpClient = new FTPClient();
         ftpClient.setControlEncoding("utf-8");
         try {
@@ -171,9 +171,49 @@ public class FtpClientUtil {
         return true;
     }
 
+    /**
+     * 上传文件流
+     *
+     * @param pathname       ftp服务保存地址
+     * @param fileName       上传到ftp的文件名
+     * @param inputStream    待上传文件流*
+     * @return
+     */
+    public boolean uploadFile(String pathname, String fileName, InputStream inputStream) {
+        try {
+            log.info("开始上传文件");
+            initFtpClient();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            CreateDirecroty(pathname);
+            ftpClient.makeDirectory(pathname);
+            ftpClient.changeWorkingDirectory(pathname);
+            ftpClient.storeFile(fileName, inputStream);
+            inputStream.close();
+            ftpClient.logout();
+            log.info("上传文件成功");
+        } catch (Exception e) {
+            log.error("上传文件失败", LogExceptionStackTrace.erroStackTrace(e));
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != inputStream) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return true;
+    }
 
     //创建多层目录文件，如果有ftp服务器已存在该文件，则不创建，如果无，则创建
-    public boolean CreateDirecroty(String remote) throws IOException {
+    private boolean CreateDirecroty(String remote) throws IOException {
         boolean success = true;
         String directory = remote + "/";
         // 如果远程目录不存在，则递归创建远程服务器目录
@@ -215,7 +255,7 @@ public class FtpClientUtil {
     }
 
     //判断ftp服务器文件是否存在
-    public boolean existFile(String path) throws IOException {
+    private boolean existFile(String path) throws IOException {
         boolean flag = false;
         FTPFile[] ftpFileArr = ftpClient.listFiles(path);
         if (ftpFileArr.length > 0) {
@@ -226,7 +266,7 @@ public class FtpClientUtil {
 
 
     //创建目录
-    public boolean makeDirectory(String dir) {
+    private boolean makeDirectory(String dir) {
         boolean flag = true;
         try {
             flag = ftpClient.makeDirectory(dir);
@@ -244,7 +284,7 @@ public class FtpClientUtil {
 
 
     //改变目录路径
-    public boolean changeWorkingDirectory(String directory) {
+    private boolean changeWorkingDirectory(String directory) {
         boolean flag = true;
         try {
             flag = ftpClient.changeWorkingDirectory(directory);
