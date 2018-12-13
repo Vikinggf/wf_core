@@ -505,4 +505,6 @@ public interface CacheHander {
 
     String hmsetWithoutSerialize(String key, Map<String, String> hash, Integer expireTime);
 
+    List<String> hmgetWithoutSerialize(String key,String... fields);
+
 }
