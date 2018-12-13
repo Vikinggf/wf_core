@@ -129,6 +129,51 @@ public class FtpClientUtil {
     }
 
     /**
+     * 下载文件 *
+     *
+     * @param pathname  FTP服务器文件目录 *
+     * @param filename  文件名称 *
+     * @return
+     */
+    public ByteArrayOutputStream downloadFile(String pathname, String filename) {
+        ByteArrayOutputStream os = null;
+        try {
+            log.info("开始下载文件");
+            initFtpClient();
+            //切换FTP目录
+            ftpClient.changeWorkingDirectory(pathname);
+            FTPFile[] ftpFiles = ftpClient.listFiles();
+            for (FTPFile file : ftpFiles) {
+                if (filename.equalsIgnoreCase(file.getName())) {
+                    os = new ByteArrayOutputStream();
+                    ftpClient.retrieveFile(file.getName(), os);
+                    os.close();
+                }
+            }
+            ftpClient.logout();
+            log.info("下载文件成功");
+        } catch (Exception e) {
+            log.error("下载文件失败", LogExceptionStackTrace.erroStackTrace(e));
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != os) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return os;
+    }
+
+    /**
      * 上传文件
      *
      * @param pathname       ftp服务保存地址
@@ -174,9 +219,9 @@ public class FtpClientUtil {
     /**
      * 上传文件流
      *
-     * @param pathname       ftp服务保存地址
-     * @param fileName       上传到ftp的文件名
-     * @param inputStream    待上传文件流*
+     * @param pathname    ftp服务保存地址
+     * @param fileName    上传到ftp的文件名
+     * @param inputStream 待上传文件流*
      * @return
      */
     public boolean uploadFile(String pathname, String fileName, InputStream inputStream) {
