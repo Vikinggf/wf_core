@@ -171,6 +171,46 @@ public class FtpClientUtil {
         return true;
     }
 
+    /**
+     * 上传文件流
+     *
+     * @param pathname       ftp服务保存地址
+     * @param fileName       上传到ftp的文件名
+     * @param inputStream    待上传文件流*
+     * @return
+     */
+    public boolean uploadFile(String pathname, String fileName, InputStream inputStream) {
+        try {
+            log.info("开始上传文件");
+            initFtpClient();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            CreateDirecroty(pathname);
+            ftpClient.makeDirectory(pathname);
+            ftpClient.changeWorkingDirectory(pathname);
+            ftpClient.storeFile(fileName, inputStream);
+            inputStream.close();
+            ftpClient.logout();
+            log.info("上传文件成功");
+        } catch (Exception e) {
+            log.error("上传文件失败", LogExceptionStackTrace.erroStackTrace(e));
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (null != inputStream) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return true;
+    }
 
     //创建多层目录文件，如果有ftp服务器已存在该文件，则不创建，如果无，则创建
     public boolean CreateDirecroty(String remote) throws IOException {
