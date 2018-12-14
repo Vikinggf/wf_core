@@ -3,7 +3,9 @@ package com.wf.core.cache.redis;
 import com.wf.core.cache.CacheHander;
 import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
+import com.wf.core.cache.redis.redisson.CacheClusterRedissonClient;
 import com.wf.core.utils.type.StringUtils;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
 
@@ -32,6 +34,12 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
      * 集群连接客户端
      */
     private JedisCluster jedisCluster;
+
+    private CacheClusterRedissonClient cacheClusterRedissonClient;
+
+    public void setCacheClusterRedissonClient(CacheClusterRedissonClient cacheClusterRedissonClient) {
+        this.cacheClusterRedissonClient = cacheClusterRedissonClient;
+    }
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -451,5 +459,10 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     @Override
     public void publish(String channel, String message) {
         jedisCluster.publish(channel, message);
+    }
+
+    @Override
+    protected RLock getLock(String key) {
+        return cacheClusterRedissonClient.getLock(key);
     }
 }

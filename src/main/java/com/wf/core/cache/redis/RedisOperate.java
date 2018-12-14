@@ -4,7 +4,6 @@ import com.wf.core.cache.CacheData;
 import com.wf.core.cache.CacheHander;
 import com.wf.core.cache.LockTask;
 import com.wf.core.cache.exception.CacheException;
-import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.redisson.api.RLock;
 
@@ -33,11 +32,7 @@ public abstract class RedisOperate implements CacheHander {
     protected static final long defaultWaitTime = 5L;
     protected static final long defaultLeaseTime = 30L;
 
-    protected CacheRedissonClient cacheRedissonClient;
 
-    public void setCacheRedissonClient(CacheRedissonClient cacheRedissonClient) {
-        this.cacheRedissonClient = cacheRedissonClient;
-    }
 
     protected byte[] serializeKey(String key) {
         return key.getBytes();
@@ -141,7 +136,7 @@ public abstract class RedisOperate implements CacheHander {
         if (expireTime == null) {
             expireTime = defaultLeaseTime;
         }
-        RLock lock = cacheRedissonClient.getLock(key);
+        RLock lock = getLock(key);
         try {
             if (lock.tryLock(waitTime, expireTime, TimeUnit.SECONDS)) {
                 return task.work();
@@ -164,4 +159,6 @@ public abstract class RedisOperate implements CacheHander {
         }
         throw new CacheException(key + " 获取锁时等待超时，等待上个任务执行完后再重试", new RuntimeException(key + " 获取锁时等待超时，等待上个任务执行完后再重试"));
     }
+
+    protected abstract RLock getLock(String key);
 }

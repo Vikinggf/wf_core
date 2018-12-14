@@ -31,10 +31,15 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     private String host;
     private int port;
 
+    private CacheRedissonClient cacheRedissonClient;
     @Override
     public void afterPropertiesSet() throws Exception {
         jedisPool = new JedisPool(jedisPoolConfig, host, port);
         LOG.info("redis连接池已经创建：" + host + " " + port);
+    }
+
+    public void setCacheRedissonClient(CacheRedissonClient cacheRedissonClient) {
+        this.cacheRedissonClient = cacheRedissonClient;
     }
 
     public JedisPoolConfig getJedisPoolConfig() {
@@ -553,7 +558,7 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
         Jedis jedis = jedisPool.getResource();
         Set<String> set =null;
         try {
-           set = jedis.hkeys(key);
+            set = jedis.hkeys(key);
         }finally {
             jedis.close();
         }
@@ -595,5 +600,10 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
         Jedis jedis = jedisPool.getResource();
         jedis.publish(channel, message);
         jedis.close();
+    }
+
+    @Override
+    protected RLock getLock(String key) {
+        return cacheRedissonClient.getLock(key);
     }
 }
