@@ -7,16 +7,15 @@ import com.wf.core.cache.RankingData;
 import com.wf.core.cache.exception.CacheException;
 import com.wf.core.cache.redis.redisson.CacheRedissonClient;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.Tuple;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis缓存实现
@@ -384,6 +383,96 @@ public class JsonRedisCacheHanderImpl implements JsonCacheHander, InitializingBe
     @Override
     public String rlock(String key, LockTask<String> task) {
         return rlock(key, defaultRetryCount, defaultWaitTime, defaultLeaseTime, task);
+    }
+
+    @Override
+    public <T> T rlockPlus(String key, LockTask<T> task) {
+        return rlockPlus(key, defaultWaitTime, defaultLeaseTime, task);
+    }
+
+    @Override
+    public <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task) {
+        if (waitTime == null) {
+            waitTime = defaultWaitTime;
+        }
+        if (expireTime == null) {
+            expireTime = defaultLeaseTime;
+        }
+        RLock lock = cacheRedissonClient.getLock(key);
+        try {
+            if (lock.tryLock(waitTime, expireTime, TimeUnit.SECONDS)) {
+                return task.work();
+            }
+        } catch (InterruptedException e) {
+            LOG.error("线程锁定异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+            throw new CacheException("线程锁定异常", e);
+        } catch (Throwable e) {
+            LOG.error("锁定任务执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+            throw new CacheException("锁定任务执行异常", e);
+        } finally {
+            try {
+                if (lock != null && lock.isHeldByCurrentThread()) {
+                    lock.unlock();
+                }
+            } catch (Exception e) {
+                LOG.error("释放锁异常 ex={} key={}", ExceptionUtils.getStackTrace(e),key);
+                throw new CacheException("释放锁异常", e);
+            }
+        }
+        throw new CacheException(key + " 获取锁时等待超时，等待上个任务执行完后再重试", new RuntimeException(key + " 获取锁时等待超时，等待上个任务执行完后再重试"));
+    }
+
+    @Override
+    public String hmset(String key, Map<String, String> hash, Integer expireTime) {
+        if(hash != null && !hash.isEmpty()) {
+            Jedis jedis = jedisPool.getResource();
+            String result = "Y";
+            try {
+                result = jedis.hmset(key, hash);
+                if(expireTime != null && expireTime.intValue() > 0) {
+                    jedis.expire(key, expireTime.intValue());
+                }
+            } finally {
+                jedis.close();
+            }
+
+            return result;
+        } else {
+            return "Y";
+        }
+    }
+
+    @Override
+    public List<String> hmget(String key, String... fields) {
+        if (fields == null) {
+            return null;
+        }
+        List<String> resultData = null;
+        Jedis jedis = jedisPool.getResource();
+
+        try {
+            resultData = jedis.hmget(key, fields);
+        } finally {
+            jedis.close();
+        }
+        return resultData;
+    }
+
+    @Override
+    public Map<String, String> hgetAll(String key) {
+        Jedis jedis = jedisPool.getResource();
+        Map<String, String> map = null;
+        try {
+            map = jedis.hgetAll(key);
+        } catch (Exception e) {
+            LOG.error("hgetAllWithoutSerialize执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
+
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return map;
     }
 
 

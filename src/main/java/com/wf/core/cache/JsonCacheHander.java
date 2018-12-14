@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -309,4 +310,55 @@ public interface JsonCacheHander {
      * @param task 任务
      */
     String rlock(String key, LockTask<String> task);
+
+
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
+    <T> T rlockPlus(String key, LockTask<T> task);
+
+    /**
+     * 分布式锁加强版
+     * @param key 任务锁的KEY
+     * @param waitTime 等待时长
+     * @param expireTime 超时时长
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
+     * @return
+     * @author Tank
+     */
+    <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
+
+    /**
+     * 同时将多个 field-value (域-值)对设置到哈希表 key 中
+     * @param key
+     * @param hash 同时将多个 field-value (域-值)对设置到哈希表 key 中
+     * @param expireTime 过期时间
+     * @return
+     * @author Tank
+     */
+    String hmset(String key, Map<String, String> hash, Integer expireTime);
+
+    /**
+     * 返回哈希表 key 中，一个或多个给定域的值
+     * @param key
+     * @param fields
+     * @return
+     * @author Tank
+     */
+    List<String> hmget(String key,String... fields);
+
+    /**
+     * 返回哈希表 key 中，所有的域和值。
+     * @param key
+     * @return
+     * @author Tank
+     */
+    Map<String, String> hgetAll(String key);
+
 }

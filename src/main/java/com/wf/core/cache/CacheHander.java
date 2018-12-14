@@ -10,7 +10,6 @@ import java.util.Set;
 
 /**
  * 缓存服务
- *
  * @author Fe 2016年3月3日
  */
 public interface CacheHander {
@@ -21,25 +20,22 @@ public interface CacheHander {
 
     /**
      * 对执行的任务进行加锁（最多两小时）
-     *
-     * @param key  锁的KEY
+     * @param key 锁的KEY
      * @param task 任务
      */
     <T> T lock(String key, LockTask<T> task);
 
     /**
      * 对执行的任务进行加锁。
-     *
-     * @param key        锁的KEY
+     * @param key 锁的KEY
      * @param expireTime 超时时间（当超过此时间后，任务将不再加锁）
-     * @param task       任务
+     * @param task 任务
      */
     <T> T lock(String key, LockTask<T> task, Integer expireTime);
 
     /**
      * 缓存数据。数据缓存两小时后强制重新查询
-     *
-     * @param key  缓存的key
+     * @param key 缓存的key
      * @param data 数据来源
      * @return
      */
@@ -47,9 +43,8 @@ public interface CacheHander {
 
     /**
      * 缓存数据。数据缓存expireTime秒后强制重新查询
-     *
-     * @param key        缓存的key
-     * @param data       数据来源
+     * @param key 缓存的key
+     * @param data 数据来源
      * @param expireTime 超时时间（秒）
      * @return
      */
@@ -57,7 +52,6 @@ public interface CacheHander {
 
     /**
      * 检查给定的key是否存在
-     *
      * @param key 缓存的key
      * @return
      */
@@ -65,7 +59,6 @@ public interface CacheHander {
 
     /**
      * 获取一个string值
-     *
      * @param key
      * @return
      */
@@ -73,7 +66,6 @@ public interface CacheHander {
 
     /**
      * 从缓存中获取一个数据
-     *
      * @param key 缓存的key
      * @return
      */
@@ -81,8 +73,7 @@ public interface CacheHander {
 
     /**
      * 设置缓存数据。数据将缓存两小时
-     *
-     * @param key   缓存的key
+     * @param key 缓存的key
      * @param value 缓存的value
      * @return
      */
@@ -90,9 +81,8 @@ public interface CacheHander {
 
     /**
      * 设置缓存数据
-     *
-     * @param key        缓存的key
-     * @param value      缓存的value
+     * @param key 缓存的key
+     * @param value 缓存的value
      * @param expireTime 超时时间（秒）
      * @return
      */
@@ -100,24 +90,14 @@ public interface CacheHander {
 
     /**
      * 删除数据
-     *
-     * @param key  缓存的key
+     * @param key 缓存的key
      * @param keys 缓存的key（多个）
      * @return
      */
-    Boolean delete(String key, String... keys);
-
-    /**
-     * 返回库里面存在的key的集合，左模糊
-     *
-     * @param key
-     * @return
-     */
-    Set<String> keys(String key);
+    Boolean delete(String key, String...keys);
 
     /**
      * 原子性增量实现(+1)
-     *
      * @param key
      * @return
      */
@@ -125,7 +105,6 @@ public interface CacheHander {
 
     /**
      * 原子性增量实现(+increment)
-     *
      * @param key
      * @param increment 增量
      * @return
@@ -134,9 +113,8 @@ public interface CacheHander {
 
     /**
      * 原子性增量实现(+increment)
-     *
      * @param key
-     * @param increment  增量
+     * @param increment 增量
      * @param expireTime
      * @return
      */
@@ -144,7 +122,6 @@ public interface CacheHander {
 
     /**
      * 原子性增量实现(当前值)
-     *
      * @param key
      * @return
      */
@@ -152,7 +129,6 @@ public interface CacheHander {
 
     /**
      * 原子性增量实现
-     *
      * @param key
      * @param expireTime
      * @return
@@ -161,17 +137,15 @@ public interface CacheHander {
 
     /**
      * 原子性增量实现-float
-     *
      * @param key
      * @param value
      * @param expireTime
      * @return
      */
-    double incrByFloat(String key, double value, Integer expireTime);
+    double incrByFloat(String key,double value,Integer expireTime);
 
     /**
      * 获取集合的size
-     *
      * @param key
      * @return
      */
@@ -179,7 +153,6 @@ public interface CacheHander {
 
     /**
      * 从集合中随机取出一个值，并将值从集合中删除
-     *
      * @param key
      * @return
      */
@@ -187,7 +160,6 @@ public interface CacheHander {
 
     /**
      * 向集合中添加一个值
-     *
      * @param key
      * @param value
      * @return
@@ -205,7 +177,6 @@ public interface CacheHander {
 
     /**
      * 从集合中移除一个或多个元素
-     *
      * @param key
      * @param value
      * @return 被成功移除的元素的数量
@@ -214,7 +185,6 @@ public interface CacheHander {
 
     /**
      * 取集合中所有值
-     *
      * @param key
      * @return
      */
@@ -222,7 +192,6 @@ public interface CacheHander {
 
     /**
      * 设置超时
-     *
      * @param key
      * @param expireTime
      * @return
@@ -231,7 +200,6 @@ public interface CacheHander {
 
     /**
      * 不存在时设置
-     *
      * @param key
      * @param expireTime
      * @return
@@ -240,7 +208,6 @@ public interface CacheHander {
 
     /**
      * 不存在时设置
-     *
      * @param key
      * @param value
      * @param expireTime
@@ -250,13 +217,12 @@ public interface CacheHander {
 
     /**
      * 将数据放入list中
-     *
      * @param key
      * @param objects
      * @param expireTime
      * @return
      */
-    Long lpush(String key, Integer expireTime, Object... objects);
+    Long lpush(String key, Integer expireTime, Object...objects);
 
     /**
      * 将数据放入队列末尾(最右边)
@@ -270,7 +236,6 @@ public interface CacheHander {
 
     /**
      * 移除并返回列表 key 的尾元素。
-     *
      * @param key
      * @return
      */
@@ -278,7 +243,6 @@ public interface CacheHander {
 
     /**
      * 将数据放入list中
-     *
      * @param key
      * @param str
      * @param expireTime
@@ -288,7 +252,6 @@ public interface CacheHander {
 
     /**
      * 获取list的总长度
-     *
      * @param key
      * @return
      */
@@ -296,7 +259,6 @@ public interface CacheHander {
 
     /**
      * 获取list的结果
-     *
      * @param key
      * @param start
      * @param end
@@ -306,7 +268,6 @@ public interface CacheHander {
 
     /**
      * 从list中删除部分数据
-     *
      * @param key
      * @param start
      * @param end
@@ -316,26 +277,23 @@ public interface CacheHander {
 
     /**
      * 排行榜功能添加积分
-     *
      * @param key
      * @param score
      * @param target
      */
-    void zincrby(String key, double score, String target);
+    void zincrby(String key,double score,String target);
 
     /**
      * 排行榜功能添加积分
-     *
      * @param key
      * @param score
      * @param target
      * @param expireTime
      */
-    void zincrby(String key, double score, String target, Integer expireTime);
+    void zincrby(String key,double score,String target,Integer expireTime);
 
     /**
      * 排行榜功能添加积分
-     *
      * @param key
      * @param score
      * @param target
@@ -344,7 +302,6 @@ public interface CacheHander {
 
     /**
      * 排行榜功能添加积分
-     *
      * @param key
      * @param score
      * @param target
@@ -354,7 +311,6 @@ public interface CacheHander {
 
     /**
      * 排行榜功能-获取排行榜
-     *
      * @param key
      * @param start
      * @param end
@@ -364,7 +320,6 @@ public interface CacheHander {
 
     /**
      * 返回有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
-     *
      * @param key
      * @param start
      * @param end
@@ -374,7 +329,6 @@ public interface CacheHander {
 
     /**
      * 移除有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
-     *
      * @param key
      * @param start
      * @param end
@@ -384,34 +338,30 @@ public interface CacheHander {
 
     /**
      * 清楚排行榜中的某用户积分
-     *
      * @param key
      * @param member
      * @return
      */
-    long zrem(String key, String... member);
+    long zrem(String key,String... member);
 
     /**
      * 获取指定成员的排名
-     *
      * @param key
      * @param member
      * @return
      */
-    Long zrevrank(String key, String member);
+    Long zrevrank(String key,String member);
 
     /**
      * 获取指定成员的分值
-     *
      * @param key
      * @param member
      * @return
      */
-    Double zscore(String key, String member);
+    Double zscore(String key,String member);
 
     /**
      * 获取当前服务器时间：毫秒
-     *
      * @return
      */
     long time();
@@ -441,19 +391,17 @@ public interface CacheHander {
 
     /**
      * 订阅一个或多个频道，调用此方法后线程会阻塞
-     *
      * @param jedisPubSub 订阅频道处理
-     * @param channel     频道
+     * @param channel 频道
      */
     void subscribe(JedisPubSub jedisPubSub, String... channel);
 
-    <T> String hmset(String key, Map<String, T> hash, Integer expireTime);
+    <T> String hmset(String key, Map<String, T> hash, Integer expireTime );
 
     <T> List<T> hmget(String key, String... fields);
 
     /**
      * 获取map数据总数
-     *
      * @param key
      * @return
      */
@@ -465,15 +413,12 @@ public interface CacheHander {
 
     <T> Map<String, T> hgetAll(String key);
 
-    Map<String, String> hgetAllWithoutSerialize(String key);
-
     Long hset(String key, String field, String value, Integer expire);
 
     Long hset(String key, String field, Object value, Integer expire);
 
     /**
      * 给指定的频道发布一个消息
-     *
      * @param channel 频道
      * @param message 消息
      */
@@ -481,10 +426,9 @@ public interface CacheHander {
 
     /**
      * 分布式锁加强版
-     *
-     * @param key  任务锁的KEY
+     * @param key 任务锁的KEY
      * @param task 需要执行的任务
-     * @param <T>  返回类型
+     * @param <T> 返回类型
      * @return
      * @author Tank
      */
@@ -492,19 +436,14 @@ public interface CacheHander {
 
     /**
      * 分布式锁加强版
-     *
-     * @param key        任务锁的KEY
-     * @param waitTime   等待时长
+     * @param key 任务锁的KEY
+     * @param waitTime 等待时长
      * @param expireTime 超时时长
-     * @param task       需要执行的任务
-     * @param <T>        返回类型
+     * @param task 需要执行的任务
+     * @param <T> 返回类型
      * @return
      * @author Tank
      */
     <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
-
-    String hmsetWithoutSerialize(String key, Map<String, String> hash, Integer expireTime);
-
-    List<String> hmgetWithoutSerialize(String key,String... fields);
 
 }
