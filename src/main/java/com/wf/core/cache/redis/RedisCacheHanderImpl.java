@@ -24,19 +24,14 @@ import java.util.concurrent.TimeUnit;
  * @author Fe
  * @date 2016年3月3日
  */
-public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
+public class RedisCacheHanderImpl extends RedisOperate  implements InitializingBean {
     private static Integer defaultCacheTime = 2 * 60 * 60;
     private JedisPoolConfig jedisPoolConfig;
     private JedisPool jedisPool;
     private String host;
     private int port;
 
-    public static final int defaultRetryCount = 3;
-    public static final long defaultWaitTime = 5L;
-    public static final long defaultLeaseTime = 30L;
-
     private CacheRedissonClient cacheRedissonClient;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         jedisPool = new JedisPool(jedisPoolConfig, host, port);
@@ -71,76 +66,12 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         this.port = port;
     }
 
-    private byte[] serialize(Object object) {
-        if (object == null) {
-            return NULL;
-        }
-        ObjectOutputStream objectOutputStream = null;
-        ByteArrayOutputStream byteArrayOutputStream = null;
-        try {
-            byteArrayOutputStream = new ByteArrayOutputStream();
-            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
-            objectOutputStream.writeObject(object);
-            byte[] bytes = byteArrayOutputStream.toByteArray();
-            return bytes;
-        } catch (Exception e) {
-            throw new CacheException("实例化失败：" + object.getClass().getName() + "未实现java.io.Serializable或全局变量未实现", e);
-        }
-    }
-
-    private Object deserialize(byte[] bytes) {
-        if (bytes != null) {
-            if (Arrays.equals(NULL, bytes)) {
-                return null;
-            }
-            ByteArrayInputStream byteArrayOutputStream = null;
-            try {
-                byteArrayOutputStream = new ByteArrayInputStream(bytes);
-                ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayOutputStream);
-                return objectInputStream.readObject();
-            } catch (Exception e) {
-                throw new CacheException("实例化失败", e);
-            }
-        }
-        return null;
-    }
-
-    private byte[] serializeKey(String key) {
-        return key.getBytes();
-    }
-
-    @Override
-    public <T> T cache(String key, CacheData data) {
-        return cache(key, data, defaultCacheTime);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> T cache(String key, CacheData data, Integer expireTime) {
-        Object result = this.get(key);
-        if (result == null) {
-            result = data.findData();
-            this.set(key, result, expireTime);
-        }
-        return (T) result;
-    }
-
     @Override
     public Boolean exists(String key) {
         Jedis jedis = jedisPool.getResource();
         boolean exists = jedis.exists(key);
         jedis.close();
         return exists;
-    }
-
-    @Override
-    public Boolean set(String key, Object value) {
-        return this.set(key, value, defaultCacheTime);
-    }
-
-    @Override
-    public long incr(String key) {
-        return incr(key, defaultCacheTime);
     }
 
     @Override
@@ -161,16 +92,6 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         }
         jedis.close();
         return true;
-    }
-
-    @Override
-    public long incrCurrent(String key) {
-        return incrBy(key, 0, null);
-    }
-
-    @Override
-    public Boolean setNX(String key, Integer expireTime) {
-        return setNX(key, Y, expireTime);
     }
 
     @Override
@@ -195,15 +116,6 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         jedis.close();
         return deleteCount != 0;
     }
-
-    @Override
-    public Set<String> keys(String key) {
-        Jedis jedis = jedisPool.getResource();
-        Set<String> set = jedis.keys(key + "*");
-        jedis.close();
-        return set;
-    }
-
     @Override
     public <T> T lock(String key, LockTask<T> task, Integer expireTime) {
         byte[] bkey = serializeKey(key);
@@ -212,7 +124,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
         while (true) {
             result = jedis.setnx(bkey, YES) == 1;
             if (result == true) {
-                if (expireTime != null) {
+                if (expireTime != null){
                     jedis.expire(bkey, expireTime);
                 }
                 try {
@@ -239,23 +151,18 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     public long incr(String key, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         Long count = jedis.incr(serializeKey(key));
-        if (count == 1 && expireTime != null) {
+        if (count == 1 && expireTime != null){
             jedis.expire(key, expireTime.intValue());
         }
         jedis.close();
         return count;
-    }
-
-    @Override
-    public long incrBy(String key, long increment) {
-        return incrBy(key, increment, defaultCacheTime);
     }
 
     @Override
     public long incrBy(String key, long increment, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         Long count = jedis.incrBy(serializeKey(key), increment);
-        if (expireTime != null) {
+        if (expireTime != null){
             jedis.expire(key, expireTime.intValue());
         }
         jedis.close();
@@ -263,13 +170,13 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public double incrByFloat(String key, double value, Integer expireTime) {
+    public double incrByFloat(String key,double value,Integer expireTime){
         Jedis jedis = jedisPool.getResource();
-        double count = jedis.incrByFloat(serializeKey(key), value);
-        int time = expireTime == null ? defaultCacheTime : expireTime;
-        jedis.expire(key, time);
+        double count = jedis.incrByFloat(serializeKey(key),value);
+        int time = expireTime==null?defaultCacheTime:expireTime;
+        jedis.expire(key,time);
         jedis.close();
-        return count;
+        return  count;
     }
 
     @Override
@@ -437,11 +344,6 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public void zincrby(String key, double score, String target) {
-        zincrby(key, score, target, defaultCacheTime);
-    }
-
-    @Override
     public void zincrby(String key, double score, String target, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
         byte[] bkey = serializeKey(key);
@@ -602,7 +504,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
 
     @Override
     public <T> String hmset(String key, Map<String, T> hash, Integer expireTime) {
-        if (hash == null || hash.isEmpty()) {
+        if (hash==null||hash.isEmpty()){
             return Y;
         }
         Jedis jedis = jedisPool.getResource();
@@ -610,19 +512,18 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
 
         try {
             byte[] keys = serializeKey(key);
-            Map<byte[], byte[]> maps = new HashMap<>(hash.size());
+            Map<byte[],byte[]> maps = new HashMap<>(hash.size());
             Iterator<Map.Entry<String, T>> it = hash.entrySet().iterator();
 
-            while (it.hasNext()) {
+            while (it.hasNext()){
                 Map.Entry<String, T> entry = it.next();
-                maps.put(serializeKey(entry.getKey()), serialize(entry.getValue()));
+                maps.put(serializeKey(entry.getKey()),serialize(entry.getValue()));
             }
-            result = jedis.hmset(keys, maps);
-
-            if (expireTime != null && expireTime > 0) {
-                jedis.expire(key, expireTime);
+            result = jedis.hmset(keys,maps);
+            if (expireTime!=null && expireTime>0){
+                jedis.expire(key,expireTime);
             }
-        } finally {
+        }finally {
             jedis.close();
         }
         return result;
@@ -630,7 +531,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
 
     @Override
     public <T> List<T> hmget(String key, String... fields) {
-        if (fields == null || fields.length <= 0) {
+        if (fields==null || fields.length<=0){
             return null;
         }
         List<T> resultData = null;
@@ -640,24 +541,23 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             byte[] keys = serializeKey(key);
             byte[][] fieldBytes = new byte[fields.length][];
 
-            for (int i = 0; i < fields.length; i++) {
+            for (int i = 0; i <fields.length; i++) {
                 String field = fields[i];
-                fieldBytes[i] = serializeKey(field);
+                fieldBytes[i]=serializeKey(field);
             }
-            List<byte[]> result = jedis.hmget(keys, fieldBytes);
+            List<byte[]> result = jedis.hmget(keys,fieldBytes);
 
-            if (result != null && !result.isEmpty()) {
+            if (result != null && !result.isEmpty()){
                 resultData = new ArrayList<>(result.size());
+                for (byte[] data :result ) {
+                    T t = (T)deserialize(data);
 
-                for (byte[] data : result) {
-                    T t = (T) deserialize(data);
-
-                    if (t != null) {
+                    if (t!=null){
                         resultData.add(t);
                     }
                 }
             }
-        } finally {
+        }finally {
             jedis.close();
         }
         return resultData;
@@ -677,9 +577,9 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     @Override
     public Long hincrBy(String key, String field, long value, Integer expireTime) {
         Jedis jedis = jedisPool.getResource();
-        long result = jedis.hincrBy(key, field, value);
-        if (expireTime != null && expireTime > 0) {
-            jedis.expire(key, expireTime);
+        long result = jedis.hincrBy(key,field,value);
+        if (expireTime!=null && expireTime >0){
+            jedis.expire(key,expireTime);
         }
         jedis.close();
         return result;
@@ -688,10 +588,10 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     @Override
     public Set<String> hkeys(String key) {
         Jedis jedis = jedisPool.getResource();
-        Set<String> set = null;
+        Set<String> set =null;
         try {
             set = jedis.hkeys(key);
-        } finally {
+        }finally {
             jedis.close();
         }
         return set;
@@ -719,23 +619,6 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
             jedis.close();
         }
         return result;
-    }
-
-    @Override
-    public Map<String, String> hgetAllWithoutSerialize(String key) {
-        Jedis jedis = jedisPool.getResource();
-        Map<String, String> map = null;
-        try {
-            map = jedis.hgetAll(key);
-        } catch (Exception e) {
-            LOG.error("hgetAllWithoutSerialize执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
-
-        } finally {
-            if (jedis != null) {
-                jedis.close();
-            }
-        }
-        return map;
     }
 
     @Override
@@ -791,93 +674,7 @@ public class RedisCacheHanderImpl implements CacheHander, InitializingBean {
     }
 
     @Override
-    public <T> T rlockPlus(String key, LockTask<T> task) {
-        return rlockPlus(key, defaultWaitTime, defaultLeaseTime, task);
-    }
-
-    /**
-     * @param key
-     * @param waitTime
-     * @param expireTime
-     * @param task
-     * @param <T>
-     * @return
-     * @author Tank
-     */
-    @Override
-    public <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task) {
-        if (waitTime == null) {
-            waitTime = defaultWaitTime;
-        }
-        if (expireTime == null) {
-            expireTime = defaultLeaseTime;
-        }
-        RLock lock = cacheRedissonClient.getLock(key);
-        try {
-            if (lock.tryLock(waitTime, expireTime, TimeUnit.SECONDS)) {
-                return task.work();
-            }
-        } catch (InterruptedException e) {
-            LOG.error("线程锁定异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
-            throw new CacheException("线程锁定异常", e);
-        } catch (Throwable e) {
-            LOG.error("锁定任务执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
-            throw new CacheException("锁定任务执行异常", e);
-        } finally {
-            try {
-                if (lock != null && lock.isHeldByCurrentThread()) {
-                    lock.unlock();
-                }
-            } catch (Exception e) {
-                LOG.error("释放锁异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
-                throw new CacheException("释放锁异常", e);
-            }
-        }
-        throw new CacheException(key + " 获取锁时等待超时，等待上个任务执行完后再重试", new RuntimeException(key + " 获取锁时等待超时，等待上个任务执行完后再重试"));
-    }
-
-    /**
-     * 该方法没有采用序列化。请要使用hmget获取值。
-     * 对应的获取方法hgetAllWithoutSerialize  hmgetWithoutSerialize
-     * @param key
-     * @param hash
-     * @param expireTime
-     * @return
-     */
-    @Override
-    public String hmsetWithoutSerialize(String key, Map<String, String> hash, Integer expireTime) {
-        if(hash != null && !hash.isEmpty()) {
-            Jedis jedis = jedisPool.getResource();
-            String result = "Y";
-
-            try {
-                result = jedis.hmset(key, hash);
-                if(expireTime != null && expireTime.intValue() > 0) {
-                    jedis.expire(key, expireTime.intValue());
-                }
-            } finally {
-                jedis.close();
-            }
-
-            return result;
-        } else {
-            return "Y";
-        }
-    }
-
-    @Override
-    public List<String> hmgetWithoutSerialize(String key,String... fields){
-        if (fields == null) {
-            return null;
-        }
-        List<String> resultData = null;
-        Jedis jedis = jedisPool.getResource();
-
-        try {
-            resultData = jedis.hmget(key, fields);
-        } finally {
-            jedis.close();
-        }
-        return resultData;
+    protected RLock getLock(String key) {
+        return cacheRedissonClient.getLock(key);
     }
 }
