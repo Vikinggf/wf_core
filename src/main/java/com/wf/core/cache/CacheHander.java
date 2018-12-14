@@ -167,6 +167,15 @@ public interface CacheHander {
     Boolean sadd(String key, String value);
 
     /**
+     * 向集合Set中添加一个或多个值
+     * @param key
+     * @param expireTime
+     * @param value
+     * @return 被添加到集合中的新元素的数量，不包括被忽略的元素。
+     */
+    Long sadd(String key, Integer expireTime, String... value);
+
+    /**
      * 从集合中移除一个或多个元素
      * @param key
      * @param value
@@ -214,6 +223,16 @@ public interface CacheHander {
      * @return
      */
     Long lpush(String key, Integer expireTime, Object...objects);
+
+    /**
+     * 将数据放入队列末尾(最右边)
+     *
+     * @param key
+     * @param expireTime
+     * @param objects
+     * @return
+     */
+    Long rpush(String key, Integer expireTime, Object... objects);
 
     /**
      * 移除并返回列表 key 的尾元素。
@@ -393,6 +412,10 @@ public interface CacheHander {
     Set<String> hkeys(String key);
 
     <T> Map<String, T> hgetAll(String key);
+
+    Long hset(String key, String field, String value, Integer expire);
+
+    Long hset(String key, String field, Object value, Integer expire);
 
     /**
      * 给指定的频道发布一个消息

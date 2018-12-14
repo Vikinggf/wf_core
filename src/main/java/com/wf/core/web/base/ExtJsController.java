@@ -7,6 +7,7 @@ import com.wf.core.persistence.Page;
 import com.wf.core.utils.RequestUtils;
 import com.wf.core.utils.TraceIdUtils;
 import com.wf.core.utils.type.MapUtils;
+import org.jasig.cas.client.util.AssertionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -194,5 +195,13 @@ public abstract class ExtJsController {
 	public Object handleException(HttpServletResponse response, Exception e) {
 		logger.error("系统异常 ex={}, traceId={}", LogExceptionStackTrace.erroStackTrace(e), TraceIdUtils.getTraceId());
 		return error(e.getMessage());
+	}
+
+	/**
+	 * 返回当前登陆者的账号
+	 * @return
+	 */
+	protected String getCurrentLoginName() {
+		return AssertionHolder.getAssertion().getPrincipal().getName();
 	}
 }

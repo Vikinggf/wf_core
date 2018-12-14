@@ -5,6 +5,7 @@ import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
 import com.wf.core.cache.redis.redisson.CacheClusterRedissonClient;
 import com.wf.core.utils.type.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
@@ -190,6 +191,15 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     }
 
     @Override
+    public Long sadd(String key, Integer expireTime, String... value) {
+        Long count = jedisCluster.sadd(key, value);
+        if (expireTime != null) {
+            jedisCluster.expire(key, expireTime);
+        }
+        return count;
+    }
+
+    @Override
     public long srem(String key, String... value) {
         if (value.length > 1) {
             return jedisCluster.srem(key, value);
@@ -226,6 +236,20 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
             bvalues[i] = serialize(value[i]);
         }
         Long result = jedisCluster.lpush(bkey, bvalues);
+        if (expireTime != null) {
+            jedisCluster.expire(bkey, expireTime);
+        }
+        return result;
+    }
+
+    @Override
+    public Long rpush(String key, Integer expireTime, Object... value) {
+        byte[] bkey = serializeKey(key);
+        byte[][] bvalues = new byte[value.length][];
+        for (int i = 0; i < bvalues.length; i++) {
+            bvalues[i] = serialize(value[i]);
+        }
+        Long result = jedisCluster.rpush(bkey, bvalues);
         if (expireTime != null) {
             jedisCluster.expire(bkey, expireTime);
         }
@@ -348,14 +372,12 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
 
     @Override
     public <T> T rlock(String key, int retry, Long waitTime, Long expireTime, LockTask<T> task) {
-        LOG.error("集群版不支持rlock，请使用 rlockPlus ");
-        return null;
+        throw new RuntimeException("集群版不支持rlock，请使用 rlockPlus ");
     }
 
     @Override
     public <T> T rlock(String key, LockTask<T> task) {
-        LOG.error("集群版不支持rlock，请使用 rlockPlus ");
-        return null;
+        throw new RuntimeException("集群版不支持rlock，请使用 rlockPlus ");
     }
 
     @Override
@@ -452,6 +474,37 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
                 T t = (T) deserialize(entry.getValue());
                 result.put(mapKey, t);
             }
+        }
+        return result;
+    }
+
+    @Override
+    public Long hset(String key, String field, String value, Integer expireTime) {
+        Long result = 0L;
+        try {
+            result = jedisCluster.hset(key, field, value);
+            if (expireTime != null) {
+                jedisCluster.expire(key, expireTime);
+            }
+        } catch (Exception e) {
+            LOG.error("hset执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
+        }
+        return result;
+    }
+
+    @Override
+    public Long hset(String key, String field, Object value, Integer expireTime) {
+        Long result = 0L;
+        try {
+            byte[] bkey = serializeKey(key);
+            byte[] bfield = serializeKey(field);
+            byte[] bvalue = serialize(value);
+            result = jedisCluster.hset(bkey, bfield, bvalue);
+            if (expireTime != null) {
+                jedisCluster.expire(bkey, expireTime);
+            }
+        } catch (Exception e) {
+            LOG.error("hset执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
         }
         return result;
     }

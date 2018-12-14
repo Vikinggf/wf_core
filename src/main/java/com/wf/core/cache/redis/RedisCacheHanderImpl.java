@@ -204,6 +204,17 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     }
 
     @Override
+    public Long sadd(String key, Integer expireTime, String... value) {
+        Jedis jedis = jedisPool.getResource();
+        Long count = jedis.sadd(key, value);
+        if (expireTime != null) {
+            jedis.expire(key, expireTime);
+        }
+        jedis.close();
+        return count;
+    }
+
+    @Override
     public long srem(String key, String... value) {
         Jedis jedis = jedisPool.getResource();
         long count = jedis.srem(key, value);
@@ -257,6 +268,22 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
             bvalues[i] = serialize(value[i]);
         }
         Long result = jedis.lpush(bkey, bvalues);
+        if (expireTime != null) {
+            jedis.expire(bkey, expireTime);
+        }
+        jedis.close();
+        return result;
+    }
+
+    @Override
+    public Long rpush(String key, Integer expireTime, Object... value) {
+        Jedis jedis = jedisPool.getResource();
+        byte[] bkey = serializeKey(key);
+        byte[][] bvalues = new byte[value.length][];
+        for (int i = 0; i < bvalues.length; i++) {
+            bvalues[i] = serialize(value[i]);
+        }
+        Long result = jedis.rpush(bkey, bvalues);
         if (expireTime != null) {
             jedis.expire(bkey, expireTime);
         }
@@ -325,6 +352,11 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
             jedis.expire(bkey, expireTime);
         }
         jedis.close();
+    }
+
+    @Override
+    public long zadd(String key, double score, String target) {
+        return zadd(key, score, target, defaultCacheTime);
     }
 
     @Override
@@ -583,6 +615,45 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
                     result.put(mapKey, t);
                 }
             }
+        } finally {
+            jedis.close();
+        }
+        return result;
+    }
+
+    @Override
+    public Long hset(String key, String field, String value, Integer expireTime) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = 0L;
+        try {
+            result = jedis.hset(key, field, value);
+            if (expireTime != null) {
+                jedis.expire(key, expireTime);
+            }
+        } catch (Exception e) {
+            LOG.error("hset执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public Long hset(String key, String field, Object value, Integer expireTime) {
+        Jedis jedis = jedisPool.getResource();
+        Long result = 0L;
+        try {
+            byte[] bkey = serializeKey(key);
+            byte[] bfield = serializeKey(field);
+            byte[] bvalue = serialize(value);
+            result = jedis.hset(bkey, bfield, bvalue);
+            if (expireTime != null) {
+                jedis.expire(bkey, expireTime);
+            }
+        } catch (Exception e) {
+            LOG.error("hset执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
         } finally {
             jedis.close();
         }
