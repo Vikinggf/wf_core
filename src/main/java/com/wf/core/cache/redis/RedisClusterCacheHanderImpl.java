@@ -1,6 +1,5 @@
 package com.wf.core.cache.redis;
 
-import com.wf.core.cache.CacheHander;
 import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
 import com.wf.core.cache.redis.redisson.CacheClusterRedissonClient;
@@ -9,7 +8,6 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
-
 import java.util.*;
 
 /**
@@ -135,16 +133,12 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
 
     @Override
     public Boolean delete(String key, String... keys) {
+        if (keys != null && keys.length > 0) {
+            throw new RuntimeException("集群不支持批量删除");
+        }
         int deleteCount = 0;
         if (key != null) {
             deleteCount += jedisCluster.del(serializeKey(key));
-        }
-        if (keys != null && keys.length > 0) {
-            List<byte[]> bkeys = new ArrayList<>(keys.length);
-            for (String k : keys) {
-                bkeys.add(serializeKey(k));
-            }
-            deleteCount += jedisCluster.del(bkeys.toArray(new byte[keys.length][]));
         }
         return deleteCount != 0;
     }
@@ -433,12 +427,26 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     }
 
     @Override
+    public Boolean hdel(String key, String... fields) {
+        if (fields == null || fields.length <= 0) {
+            return null;
+        }
+        byte[][] fieldBytes = new byte[fields.length][];
+        for (int i = 0; i < fields.length; i++) {
+            String field = fields[i];
+            fieldBytes[i] = serializeKey(field);
+        }
+        return jedisCluster.hdel(serializeKey(key), fieldBytes) > 0;
+    }
+
+    @Override
     public Long hlen(String key) {
         return jedisCluster.hlen(key);
     }
 
     /**
      * 这个方法不可以使用的原因是因为 hmset 把value值序列化了。
+     *
      * @param key
      * @param field
      * @param value
