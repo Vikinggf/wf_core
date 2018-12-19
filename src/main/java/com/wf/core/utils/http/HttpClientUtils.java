@@ -76,7 +76,6 @@ public class HttpClientUtils {
     public static String request(String url, String method, String charset, Logger logger) {
         HttpURLConnection httpConnection = null;
         try {
-            logger.info("request: " + url);
             httpConnection = (HttpURLConnection) new URL(url).openConnection();
             httpConnection.setConnectTimeout(30000);
             httpConnection.setReadTimeout(30000);
