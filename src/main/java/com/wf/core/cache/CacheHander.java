@@ -401,6 +401,14 @@ public interface CacheHander {
     <T> List<T> hmget(String key, String... fields);
 
     /**
+     * 删除指定hash的field
+     * @param key
+     * @param fields
+     * @return
+     */
+    Boolean hdel(String key, String... fields);
+
+    /**
      * 获取map数据总数
      * @param key
      * @return
@@ -445,5 +453,7 @@ public interface CacheHander {
      * @author Tank
      */
     <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
+
+
 
 }
