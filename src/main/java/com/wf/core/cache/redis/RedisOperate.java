@@ -66,7 +66,7 @@ public abstract class RedisOperate implements CacheHander {
                 ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayOutputStream);
                 return objectInputStream.readObject();
             } catch (Exception e) {
-                throw new CacheException("实例化失败", e);
+                throw new CacheException("反序列化失败", e);
             }
         }
         return null;
