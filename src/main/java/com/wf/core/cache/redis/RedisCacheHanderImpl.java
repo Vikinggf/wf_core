@@ -564,6 +564,27 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     }
 
     @Override
+    public Boolean hdel(String key, String... fields) {
+        if (fields==null || fields.length<=0){
+            return null;
+        }
+        byte[][] fieldBytes = new byte[fields.length][];
+        for (int i = 0; i <fields.length; i++) {
+            String field = fields[i];
+            fieldBytes[i]=serializeKey(field);
+        }
+        Jedis jedis = jedisPool.getResource();
+        try {
+            return jedis.hdel(serializeKey(key),fieldBytes) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            jedis.close();
+        }
+        return false;
+    }
+
+    @Override
     public Long hlen(String key) {
         Jedis jedis = this.jedisPool.getResource();
         try {
