@@ -3,6 +3,7 @@ package com.wf.core.web.base;
 import com.wf.core.utils.MVCExceptionHandle;
 import com.wf.core.web.response.BaseRspBean;
 import com.wf.core.web.response.ErrorRspBean;
+import com.wf.core.web.response.ResponseBean;
 import com.wf.core.web.response.SuccessRspBean;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oltu.oauth2.common.OAuth;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Ares
  * @version 2016-01-23
  */
-public abstract class BaseController extends MVCExceptionHandle {
+public abstract class BaseController<T> extends MVCExceptionHandle {
     public static final BaseRspBean SUCCESS = new SuccessRspBean<>(), ERROR = new ErrorRspBean();
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
@@ -33,6 +34,34 @@ public abstract class BaseController extends MVCExceptionHandle {
      */
     public SuccessRspBean<?> data(Object data) {
         return new SuccessRspBean<>(data);
+    }
+
+    /**
+     * 成功响应
+     * @param data 响应数据
+     * @return
+     */
+    public ResponseBean<T> responseSuccess(T data) {
+        return new ResponseBean<T>(data);
+    }
+
+    /**
+     * 错误响应
+     * @param message 错误信息
+     * @return
+     */
+    public ResponseBean<T> responseError(String message) {
+        return new ResponseBean<T>(message);
+    }
+
+    /**
+     * 错误响应
+     * @param  code  指定错误代号
+     * @param message 错误信息
+     * @return
+     */
+    public ResponseBean<T> responseError(int code,String message) {
+        return new ResponseBean<T>(code,message);
     }
 
     /**

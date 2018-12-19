@@ -2,6 +2,7 @@ package com.wf.core.cache.redis.redisson;
 
 
 import org.redisson.Redisson;
+import org.redisson.api.RBatch;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -44,5 +45,9 @@ public class CacheRedissonClient implements InitializingBean {
 
     public RLock getLock(String name){
         return redisson.getLock(name);
+    }
+
+    public RBatch createBatch(){
+        return redisson.createBatch();
     }
 }
