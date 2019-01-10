@@ -113,7 +113,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
 
     @Override
     public String getString(String key) {
-        return (String) get(key);
+        return jedisCluster.get(key);
     }
 
     @Override
