@@ -523,6 +523,11 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     }
 
     @Override
+    public Boolean sismember(String key, String member) {
+        return jedisCluster.sismember(key, member);
+    }
+
+    @Override
     protected RLock getLock(String key) {
         return cacheClusterRedissonClient.getLock(key);
     }

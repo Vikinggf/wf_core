@@ -455,5 +455,11 @@ public interface CacheHander {
     <T> T rlockPlus(String key, Long waitTime, Long expireTime, LockTask<T> task);
 
 
-
+    /**
+     * 判断 member 元素是否集合 key 的成员
+     * @param key 集合
+     * @param member 被判断的值
+     * @return
+     */
+    Boolean sismember(String key,String member);
 }
