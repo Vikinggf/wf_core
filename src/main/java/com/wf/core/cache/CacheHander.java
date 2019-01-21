@@ -462,4 +462,12 @@ public interface CacheHander {
      * @return
      */
     Boolean sismember(String key,String member);
+
+    /**
+     * 查看哈希表 key 中，给定域 field 是否存在
+     * @param key
+     * @param filed
+     * @return
+     */
+    Boolean hexists(String key,String filed);
 }
