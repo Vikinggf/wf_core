@@ -711,6 +711,22 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     }
 
     @Override
+    public Boolean hexists(String key, String filed) {
+        Jedis jedis = jedisPool.getResource();
+        Boolean result = false;
+        try {
+            result = jedis.hexists(key, filed);
+        } catch (Exception e) {
+            LOG.error("sismember 执行异常 ex={} key={}", ExceptionUtils.getStackTrace(e), key);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+        return result;
+    }
+
+    @Override
     protected RLock getLock(String key) {
         return cacheRedissonClient.getLock(key);
     }

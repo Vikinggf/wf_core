@@ -528,6 +528,11 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     }
 
     @Override
+    public Boolean hexists(String key, String filed) {
+        return jedisCluster.hexists(key, filed);
+    }
+
+    @Override
     protected RLock getLock(String key) {
         return cacheClusterRedissonClient.getLock(key);
     }
