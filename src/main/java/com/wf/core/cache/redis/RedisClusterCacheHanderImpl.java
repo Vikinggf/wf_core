@@ -8,6 +8,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
+
 import java.util.*;
 
 /**
@@ -150,6 +151,16 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
             jedisCluster.expire(key, expireTime.intValue());
         }
         return count;
+    }
+
+    @Override
+    public Long zcount(String key, double min, double max) {
+        return jedisCluster.zcount(serializeKey(key), min, max);
+    }
+
+    @Override
+    public Long zcard(String key) {
+        return jedisCluster.zcard(serializeKey(key));
     }
 
     @Override
