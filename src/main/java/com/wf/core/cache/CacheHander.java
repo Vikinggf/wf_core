@@ -470,4 +470,22 @@ public interface CacheHander {
      * @return
      */
     Boolean hexists(String key,String filed);
+
+    /**
+     * 当 key 存在且是有序集类型时，返回有序集的基数。
+     * 当 key 不存在时，返回 0
+     * @param key 有序集合key
+     * @return 有序集 key 的基数
+     */
+    Long zcard(String key);
+
+    /**
+     * 返回有序集key中 score值在min和max之间(默认包括score值等于min或max)的成员的数量。
+     * 关于参数 min 和 max 的详细使用方法，请参考 ZRANGEBYSCORE 命令
+     * @param key 有序集合的key
+     * @param min 最小值
+     * @param max 最大值
+     * @return 符合条件的成员数量
+     */
+    Long zcount(String key, double min, double max);
 }
