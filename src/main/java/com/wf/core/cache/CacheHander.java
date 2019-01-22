@@ -470,4 +470,21 @@ public interface CacheHander {
      * @return
      */
     Boolean hexists(String key,String filed);
+
+    /**
+     * 返回有序集 key 的基数
+     * @param key
+     * @return
+     */
+    Long zcard(String key);
+
+    /**
+     * 返回有序集 key 的基数
+     *
+     * @param key
+     * @param min
+     * @param max
+     * @return
+     */
+    Long zcount(String key, double min, double max);
 }

@@ -1,7 +1,5 @@
 package com.wf.core.cache.redis;
 
-import com.wf.core.cache.CacheData;
-import com.wf.core.cache.CacheHander;
 import com.wf.core.cache.LockTask;
 import com.wf.core.cache.RankingData;
 import com.wf.core.cache.exception.CacheException;
@@ -11,12 +9,7 @@ import org.redisson.api.RLock;
 import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * redis缓存实现
@@ -724,6 +717,26 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
             }
         }
         return result;
+    }
+
+    @Override
+    public Long zcard(String key) {
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            return jedis.zcard(serializeKey(key));
+        } finally {
+            jedis.close();
+        }
+    }
+
+    @Override
+    public Long zcount(String key, double min, double max) {
+        Jedis jedis = this.jedisPool.getResource();
+        try {
+            return jedis.zcount(serializeKey(key), min, max);
+        } finally {
+            jedis.close();
+        }
     }
 
     @Override
