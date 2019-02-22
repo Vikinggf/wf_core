@@ -7,6 +7,7 @@ import redis.clients.jedis.JedisPubSub;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 缓存服务
@@ -488,4 +489,6 @@ public interface CacheHander {
      * @return 符合条件的成员数量
      */
     Long zcount(String key, double min, double max);
+
+    Long getExpire(String key) ;
 }

@@ -127,7 +127,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     public Boolean set(String key, Object value, Integer expireTime) {
         jedisCluster.set(serializeKey(key), serialize(value));
         if (expireTime != null) {
-            jedisCluster.expire(key, expireTime);
+            jedisCluster.expire(serializeKey(key), expireTime);
         }
         return true;
     }
@@ -148,7 +148,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     public long incrBy(String key, long increment, Integer expireTime) {
         Long count = jedisCluster.incrBy(serializeKey(key), increment);
         if (expireTime != null) {
-            jedisCluster.expire(key, expireTime.intValue());
+            jedisCluster.expire(serializeKey(key), expireTime.intValue());
         }
         return count;
     }
@@ -156,6 +156,11 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     @Override
     public Long zcount(String key, double min, double max) {
         return jedisCluster.zcount(serializeKey(key), min, max);
+    }
+
+    @Override
+    public Long getExpire(String key) {
+        return jedisCluster.ttl(serializeKey(key));
     }
 
     @Override
@@ -167,7 +172,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     public long incr(String key, Integer expireTime) {
         Long count = jedisCluster.incr(serializeKey(key));
         if (count == 1 && expireTime != null) {
-            jedisCluster.expire(key, expireTime.intValue());
+            jedisCluster.expire(serializeKey(key), expireTime.intValue());
         }
         return count;
     }
@@ -176,7 +181,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
     public double incrByFloat(String key, double value, Integer expireTime) {
         double count = jedisCluster.incrByFloat(serializeKey(key), value);
         int time = expireTime == null ? defaultCacheTime : expireTime;
-        jedisCluster.expire(key, time);
+        jedisCluster.expire(serializeKey(key), time);
         return count;
     }
 
@@ -404,7 +409,7 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
         }
         String result = jedisCluster.hmset(keys, maps);
         if (expireTime != null && expireTime > 0) {
-            jedisCluster.expire(key, expireTime);
+            jedisCluster.expire(keys, expireTime);
         }
         return result;
     }
