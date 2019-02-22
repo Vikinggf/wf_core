@@ -10,6 +10,7 @@ import org.springframework.beans.factory.InitializingBean;
 import redis.clients.jedis.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * redis缓存实现
@@ -740,7 +741,20 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     }
 
     @Override
+    public Long getExpire(String key) {
+        Jedis jedis = this.jedisPool.getResource();
+
+        try {
+            return jedis.ttl(serializeKey(key));
+        } finally {
+            jedis.close();
+        }
+    }
+
+    @Override
     protected RLock getLock(String key) {
         return cacheRedissonClient.getLock(key);
     }
+
+
 }
