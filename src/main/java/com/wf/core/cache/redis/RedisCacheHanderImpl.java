@@ -752,6 +752,28 @@ public class RedisCacheHanderImpl extends RedisOperate  implements InitializingB
     }
 
     @Override
+    public <T> T rpoplpush(String source, String target) {
+        Jedis jedis = this.jedisPool.getResource();
+
+        try {
+            return (T) jedis.rpoplpush(source,target);
+        } finally {
+            jedis.close();
+        }
+    }
+
+    @Override
+    public Long lrem(String key, long count, String value) {
+        Jedis jedis = this.jedisPool.getResource();
+
+        try {
+            return jedis.lrem(key,count,value);
+        } finally {
+            jedis.close();
+        }
+    }
+
+    @Override
     protected RLock getLock(String key) {
         return cacheRedissonClient.getLock(key);
     }
