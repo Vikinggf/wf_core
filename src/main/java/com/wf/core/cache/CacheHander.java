@@ -492,8 +492,5 @@ public interface CacheHander {
 
     Long getExpire(String key) ;
 
-    <T> T rpoplpush(String source,String target);
-
-    Long lrem (String key,long count,String value);
 
 }

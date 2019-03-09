@@ -163,15 +163,6 @@ public class RedisClusterCacheHanderImpl extends RedisOperate implements Initial
         return jedisCluster.ttl(serializeKey(key));
     }
 
-    @Override
-    public <T> T rpoplpush(String source, String target) {
-        return (T) jedisCluster.rpoplpush(source, target);
-    }
-
-    @Override
-    public Long lrem(String key, long count, String value) {
-        return jedisCluster.lrem(key,count,value);
-    }
 
     @Override
     public Long zcard(String key) {
